@@ -16,6 +16,16 @@ DOWNLOAD_UNIT=$(echo "$STATUS_CLEAN" | awk 'NR==7 {print $3}')
 RUNNING_TIME=$(echo "$STATUS_CLEAN" | awk 'NR==2 {match($0, /\(([^)]+)\)/, arr); print arr[1]}')
 PEAK=$(echo "$STATUS_CLEAN" | awk 'NR==2 {print $6}')
 
+# Set defaults for empty values
+CONNECTED=${CONNECTED:-0}
+CONNECTING=${CONNECTING:-0}
+UPLOAD=${UPLOAD:-0}
+UPLOAD_UNIT=${UPLOAD_UNIT:-MB}
+DOWNLOAD=${DOWNLOAD:-0}
+DOWNLOAD_UNIT=${DOWNLOAD_UNIT:-MB}
+RUNNING_TIME=${RUNNING_TIME:-0s}
+PEAK=${PEAK:-0}
+
 # Get unique IPs count from cumulative_ips file
 UNIQUE_IPS=$(wc -l < /opt/conduit/traffic_stats/cumulative_ips 2>/dev/null || echo "0")
 

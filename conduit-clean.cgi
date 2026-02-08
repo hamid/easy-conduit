@@ -15,6 +15,13 @@ UPLOAD=$(echo "$STATUS_CLEAN" | awk 'NR==6 {print $2, $3}')
 DOWNLOAD=$(echo "$STATUS_CLEAN" | awk 'NR==7 {print $2, $3}')
 RUNNING_TIME=$(echo "$STATUS_CLEAN" | awk 'NR==2 {match($0, /\(([^)]+)\)/, arr); print arr[1]}')
 
+# Set defaults for empty values
+CONNECTED=${CONNECTED:-0}
+CONNECTING=${CONNECTING:-0}
+UPLOAD=${UPLOAD:-0 MB}
+DOWNLOAD=${DOWNLOAD:-0 MB}
+RUNNING_TIME=${RUNNING_TIME:-0s}
+
 # Calculate total clients (connected + connecting)
 TOTAL_CLIENTS=$((CONNECTED + CONNECTING))
 
