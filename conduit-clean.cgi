@@ -226,33 +226,33 @@ cat <<'HTML'
         <div class="country-list">
             <h2>🌍 TOP 5 BY UNIQUE IPs</h2>
             <div class="country-item">
-                <span class="country-name">🇮🇷 Iran</span>
 HTML
-echo "                <span class=\"country-count\">${IRAN_COUNT}</span>"
+echo "                <span class=\"country-name\">${COUNTRY_1_FLAG} ${COUNTRY_1_FULL}</span>"
+echo "                <span class=\"country-count\">${COUNTRY_1_COUNT}</span>"
 cat <<'HTML'
             </div>
             <div class="country-item">
-                <span class="country-name">🇩🇪 Germany</span>
 HTML
-echo "                <span class=\"country-count\">${GERMANY_COUNT}</span>"
+echo "                <span class=\"country-name\">${COUNTRY_2_FLAG} ${COUNTRY_2_FULL}</span>"
+echo "                <span class=\"country-count\">${COUNTRY_2_COUNT}</span>"
 cat <<'HTML'
             </div>
             <div class="country-item">
-                <span class="country-name">🇺🇸 United States</span>
 HTML
-echo "                <span class=\"country-count\">${USA_COUNT}</span>"
+echo "                <span class=\"country-name\">${COUNTRY_3_FLAG} ${COUNTRY_3_FULL}</span>"
+echo "                <span class=\"country-count\">${COUNTRY_3_COUNT}</span>"
 cat <<'HTML'
             </div>
             <div class="country-item">
-                <span class="country-name">🇳🇱 Netherlands</span>
 HTML
-echo "                <span class=\"country-count\">${NETHERLANDS_COUNT}</span>"
+echo "                <span class=\"country-name\">${COUNTRY_4_FLAG} ${COUNTRY_4_FULL}</span>"
+echo "                <span class=\"country-count\">${COUNTRY_4_COUNT}</span>"
 cat <<'HTML'
             </div>
             <div class="country-item">
-                <span class="country-name">🇫🇷 France</span>
 HTML
-echo "                <span class=\"country-count\">${FRANCE_COUNT}</span>"
+echo "                <span class=\"country-name\">${COUNTRY_5_FLAG} ${COUNTRY_5_FULL}</span>"
+echo "                <span class=\"country-count\">${COUNTRY_5_COUNT}</span>"
 cat <<'HTML'
             </div>
         </div>
