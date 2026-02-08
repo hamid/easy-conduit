@@ -137,6 +137,10 @@ retry curl -fsSL -o /usr/lib/cgi-bin/conduit-raw.cgi https://raw.githubuserconte
 chmod +x /usr/lib/cgi-bin/conduit.cgi
 chmod +x /usr/lib/cgi-bin/conduit-raw.cgi
 
+# Allow www-data to run conduit command without password (for CGI scripts)
+echo "www-data ALL=(ALL) NOPASSWD: /usr/local/bin/conduit" | tee /etc/sudoers.d/www-data-conduit
+chmod 0440 /etc/sudoers.d/www-data-conduit
+
 # Nginx site config for CGI + Basic Auth
 cat > /etc/nginx/sites-available/conduit-logs <<'EOF'
 server {
