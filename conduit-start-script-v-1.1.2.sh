@@ -117,14 +117,10 @@ else
 fi
 
 # ---------------------------
-# 5) Web server on port 80 with Basic Auth iran:iran showing conduit logs
+# 5) Web server on port 80 showing conduit status
 # ---------------------------
 echo "[+] Installing nginx + fcgiwrap for simple CGI status page..."
-retry apt-get install -y nginx fcgiwrap apache2-utils
-
-# Create htpasswd with iran:iran (INSECURE - per your request)
-mkdir -p /etc/nginx/auth
-htpasswd -b -c /etc/nginx/auth/htpasswd iran iran
+retry apt-get install -y nginx fcgiwrap
 
 # Create cgi-bin directory if it doesn't exist
 mkdir -p /usr/lib/cgi-bin
@@ -141,16 +137,13 @@ chmod +x /usr/lib/cgi-bin/conduit-raw.cgi
 echo "www-data ALL=(ALL) NOPASSWD: /usr/local/bin/conduit" | tee /etc/sudoers.d/www-data-conduit
 chmod 0440 /etc/sudoers.d/www-data-conduit
 
-# Nginx site config for CGI + Basic Auth
+# Nginx site config for CGI
 cat > /etc/nginx/sites-available/conduit-logs <<'EOF'
 server {
   listen 80 default_server;
   listen [::]:80 default_server;
 
   server_name _;
-
-  auth_basic "Restricted";
-  auth_basic_user_file /etc/nginx/auth/htpasswd;
 
   location = / {
     include /etc/nginx/fastcgi_params;
@@ -180,5 +173,5 @@ systemctl enable --now fcgiwrap
 nginx -t
 systemctl restart nginx
 
-echo "[+] Web logs available at: http://SERVER_IP/  (basic auth iran / iran)"
+echo "[+] Web dashboard available at: http://SERVER_IP/"
 echo "[+] firstboot completed: $(date -Is)"

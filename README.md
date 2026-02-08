@@ -1,14 +1,10 @@
-# Psiphon Conduit Deployment & Web Dashboard
+# Easy Conduit - Automated Psiphon Conduit Deployment
 
-Automated deployment script for Psiphon Conduit with a clean web interface to monitor real-time statistics.
+One-command deployment of Psiphon Conduit with a beautiful web dashboard to monitor real-time statistics and help provide internet freedom.
 
-## Overview
+## 🚀 Quick Start
 
-This repository contains scripts to deploy a Psiphon Conduit node with a web-based monitoring dashboard on Ubuntu/Debian servers. The dashboard displays real-time connection statistics, unique IPs, bandwidth usage, and geographic distribution of users.
-
-## Quick Start
-
-Run the deployment script on a fresh Ubuntu/Debian server:
+Deploy on a fresh Ubuntu/Debian server with a single command:
 
 ```bash
 wget https://raw.githubusercontent.com/hamid/easy-conduit/master/conduit-start-script-v-1.1.2.sh
@@ -16,88 +12,25 @@ chmod +x conduit-start-script-v-1.1.2.sh
 sudo bash conduit-start-script-v-1.1.2.sh
 ```
 
-##  Components
+**That's it!** In ~5 minutes you'll have:
+- ✅ Psiphon Conduit running in Docker
+- ✅ Web dashboard at `http://YOUR_SERVER_IP/`
+- ✅ JSON API at `http://YOUR_SERVER_IP/raw`
+- ✅ Automatic firewall configuration
+- ✅ Real-time statistics tracking
 
-### 1. **conduit-start-script-v-1.1.2.sh**
-Main deployment script that automates the complete setup process.
+## 📊 Dashboard Features
 
-### 2. **conduit-clean.cgi**
-Web interface CGI script displaying the #FreeIran dashboard with:
-- Real-time client statistics (Total Connected, Online Clients)
-- Bandwidth monitoring (Upload/Download speeds)
-- Dynamic geographic distribution (Top 5 countries from actual data)
-- Clean minimal UI with white background and red/gold/green colors
-- Auto-refresh every 10 seconds
+### Main Dashboard (`/`)
+Beautiful #FreeIran themed interface showing:
+- **Total Connected**: Unique IPs that have connected
+- **Online Clients**: Currently active connections
+- **Bandwidth**: Real-time upload/download speeds
+- **Geographic Distribution**: Top 5 countries by unique IPs
+- **Auto-refresh**: Updates every 10 seconds
 
-### 3. **conduit-raw.cgi**
-JSON API endpoint (`/raw`) that returns structured data for programmatic access.
-
-## 🔧 Deployment Steps
-
-The deployment script (`conduit-start-script-v-1.1.2.sh`) performs the following steps:
-
-### **Step 0: Initialization**
-- Sets up logging to `/var/log/firstboot.log`
-- Defines helper functions for retries and command checking
-- Detects package manager (apt-get for Ubuntu/Debian)
-
-### **Step 1: System Preparation**
-- Updates and upgrades system packages
-- Installs essential tools: `curl`, `ca-certificates`, `gnupg`, `lsb-release`, `ufw`
-- Sets up non-interactive mode for unattended installation
-
-### **Step 2: Firewall Configuration**
-- Resets and configures UFW (Uncomplicated Firewall)
-- Opens required ports:
-  - Port 22 (SSH)
-  - Port 80 (HTTP for web dashboard)
-- Blocks common torrent ports (outbound):
-  - 6881-6889, 6969, 51413 (TCP/UDP)
-- Enables firewall with deny-by-default incoming policy
-
-### **Step 3: Docker Installation**
-- Downloads and installs Docker using official get.docker.com script
-- Enables Docker service to start on boot
-- Verifies Docker installation
-
-### **Step 4: Conduit Manager Installation**
-- Downloads conduit-manager script from GitHub
-- Automated configuration with predefined settings:
-  - **Max Clients**: 200
-  - **Bandwidth Limit**: 20 Mbps per client
-  - **Container Count**: Default (auto-calculated)
-- Installs Psiphon Conduit in Docker container
-- Verifies conduit command is available
-
-### **Step 5: Web Dashboard Setup**
-- Installs nginx web server and fcgiwrap for CGI support
-- Installs apache2-utils for basic authentication
-- Creates basic auth credentials (username: `iran`, password: `iran`)
-- Downloads latest CGI scripts from GitHub repository:
-  - `conduit-clean.cgi` → Main dashboard with real-time statistics
-  - `conduit-raw.cgi` → JSON API endpoint
-- Deploys web interface:
-  - **Main dashboard** at `/` - Shows #FreeIran interface with dynamic country data
-  - **JSON API** at `/raw` - Returns structured data
-- Configures nginx to serve both routes
-- Enables services to start on boot
-
-## 🌐 Accessing the Dashboard
-
-After deployment:
-
-### Web Interface
-```
-http://[YOUR_SERVER_IP]/
-```
-- **Username**: `iran`
-- **Password**: `iran`
-
-### JSON API
-```
-http://[YOUR_SERVER_IP]/raw
-```
-Returns JSON with:
+### JSON API (`/raw`)
+Programmatic access to all metrics:
 ```json
 {
   "status": "running",
@@ -116,64 +49,94 @@ Returns JSON with:
   "top_countries": [
     {"country": "Iran", "count": 8017},
     {"country": "United States", "count": 535}
-    // ... more countries
   ]
 }
 ```
 
-## Color Scheme
+## 🔧 What Gets Installed
 
-- **Background**: White (#ffffff)
-- **Numbers/Values**: Dark Green (#124a3f)
-- **Labels**: Red (#ab0207) to Gold (#fdba20) gradient
-- **Title (#FreeIran)**: Red (#ab0207)
+The deployment script automatically:
 
+1. **System Updates**: Upgrades all packages to latest versions
+2. **Docker**: Installs Docker CE for container management
+3. **Firewall**: Configures UFW with:
+   - SSH (22), HTTP (80) open
+   - Torrent ports blocked
+4. **Psiphon Conduit**: 
+   - Max clients: 200
+   - Bandwidth: 5 Mbps per client
+   - Running in Docker container
+5. **Web Server**: Nginx + fcgiwrap for CGI
+6. **Monitoring**: Background tracker script for real-time stats
 
-## Logs
+## 🌐 Access Your Dashboard
 
-All deployment logs are saved to:
+After deployment completes:
+
+**Web Dashboard**
 ```
-/var/log/firstboot.log
+http://YOUR_SERVER_IP/
 ```
+No authentication required - open access
 
-View logs:
+**JSON API**
+```
+http://YOUR_SERVER_IP/raw
+```
+Returns structured JSON data for integration
+
+## 🛠️ Managing Your Conduit
+
 ```bash
+# Check status
+sudo conduit status
+
+# Start/Stop/Restart
+sudo conduit start
+sudo conduit stop  
+sudo conduit restart
+
+# View logs
 sudo tail -f /var/log/firstboot.log
 ```
 
-## 🛠️ Managing Conduit
+## 📂 Important Directories
 
-After installation, manage Conduit using:
+- **Conduit Binary**: `/usr/local/bin/conduit`
+- **Dashboard Scripts**: `/usr/lib/cgi-bin/`
+- **Statistics Data**: `/opt/conduit/traffic_stats/`
+- **Deployment Logs**: `/var/log/firstboot.log`
 
-```bash
-sudo conduit          # Interactive menu
-sudo conduit status   # View status
-sudo conduit start    # Start Conduit
-sudo conduit stop     # Stop Conduit
-sudo conduit restart  # Restart Conduit
-```
+## 💝 Supporting Internet Freedom
 
-## 📂 File Locations
+This project is dedicated to helping provide censorship-resistant connectivity to users in restricted regions, especially Iran.
 
-- **Conduit Manager**: `/usr/local/bin/conduit`
-- **CGI Scripts**: `/usr/lib/cgi-bin/`
-- **Nginx Config**: `/etc/nginx/sites-available/conduit-logs`
-- **Auth File**: `/etc/nginx/auth/htpasswd`
-- **Data Directory**: `/opt/conduit/traffic_stats/`
+> **"Internet should not be blocked in any country. Access to information is a fundamental human right."**
 
-## Mission
+Every Conduit server you deploy helps people:
+- 🌍 Access blocked websites and services
+- 📰 Read uncensored news and information  
+- 💬 Communicate freely with the world
+- 🎓 Access educational resources
 
-This project supports internet freedom and helps provide censorship-resistant connectivity to users in restricted regions. The #FreeIran dashboard specifically highlights the importance of open internet access for all.
+## 🤝 Contributing
 
-> *"Internet should not be blocked in any country. Access to information is a fundamental human right."*
+Want to help? You can:
+- Deploy your own Conduit server
+- Report bugs or suggest features
+- Improve the dashboard design
+- Add more language translations
+- Share this project with others
 
-## License
+## 📝 License
 
-Open source - feel free to use and modify as needed.
+Open source - use freely to help spread internet freedom.
 
-## Contributing
+---
 
-Contributions welcome! Please feel free to submit issues or pull requests.
+**Made with ♥ for a free and open internet**
+
+*Together, we break barriers. Together, we build bridges.*
 
 ---
 
