@@ -23,10 +23,11 @@ Main deployment script that automates the complete setup process.
 
 ### 2. **conduit-clean.cgi**
 Web interface CGI script displaying the #FreeIran dashboard with:
-- Real-time client statistics
-- Bandwidth monitoring
-- Geographic distribution
-- Clean minimal UI with custom colors
+- Real-time client statistics (Total Connected, Online Clients)
+- Bandwidth monitoring (Upload/Download speeds)
+- Dynamic geographic distribution (Top 5 countries from actual data)
+- Clean minimal UI with white background and red/gold/green colors
+- Auto-refresh every 10 seconds
 
 ### 3. **conduit-raw.cgi**
 JSON API endpoint (`/raw`) that returns structured data for programmatic access.
@@ -72,10 +73,13 @@ The deployment script (`conduit-start-script-v-1.1.2.sh`) performs the following
 - Installs nginx web server and fcgiwrap for CGI support
 - Installs apache2-utils for basic authentication
 - Creates basic auth credentials (username: `iran`, password: `iran`)
-- Deploys CGI scripts:
-  - **Main dashboard** at `/` - Shows #FreeIran interface
+- Downloads latest CGI scripts from GitHub repository:
+  - `conduit-clean.cgi` → Main dashboard with real-time statistics
+  - `conduit-raw.cgi` → JSON API endpoint
+- Deploys web interface:
+  - **Main dashboard** at `/` - Shows #FreeIran interface with dynamic country data
   - **JSON API** at `/raw` - Returns structured data
-- Configures nginx to serve the dashboard
+- Configures nginx to serve both routes
 - Enables services to start on boot
 
 ## 🌐 Accessing the Dashboard

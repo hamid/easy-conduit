@@ -27,12 +27,73 @@ else
     UNIQUE_IPS=$UNIQUE_IPS_RAW
 fi
 
-# Calculate country distribution (approximate percentages)
-IRAN_COUNT=$((UNIQUE_IPS_RAW * 75 / 100))
-GERMANY_COUNT=$((UNIQUE_IPS_RAW * 10 / 100))
-USA_COUNT=$((UNIQUE_IPS_RAW * 8 / 100))
-NETHERLANDS_COUNT=$((UNIQUE_IPS_RAW * 4 / 100))
-FRANCE_COUNT=$((UNIQUE_IPS_RAW * 3 / 100))
+# Get actual country distribution from geoip_cache
+GEOIP_CACHE="/opt/conduit/traffic_stats/geoip_cache"
+if [ -f "$GEOIP_CACHE" ]; then
+    # Parse geoip_cache and count by country, get top 5
+    TOP_COUNTRIES=$(awk '{print $2}' "$GEOIP_CACHE" | sort | uniq -c | sort -rn | head -5)
+    
+    # Extract individual country counts
+    COUNTRY_1_COUNT=$(echo "$TOP_COUNTRIES" | awk 'NR==1 {print $1}')
+    COUNTRY_1_NAME=$(echo "$TOP_COUNTRIES" | awk 'NR==1 {print $2}')
+    COUNTRY_2_COUNT=$(echo "$TOP_COUNTRIES" | awk 'NR==2 {print $1}')
+    COUNTRY_2_NAME=$(echo "$TOP_COUNTRIES" | awk 'NR==2 {print $2}')
+    COUNTRY_3_COUNT=$(echo "$TOP_COUNTRIES" | awk 'NR==3 {print $1}')
+    COUNTRY_3_NAME=$(echo "$TOP_COUNTRIES" | awk 'NR==3 {print $2}')
+    COUNTRY_4_COUNT=$(echo "$TOP_COUNTRIES" | awk 'NR==4 {print $1}')
+    COUNTRY_4_NAME=$(echo "$TOP_COUNTRIES" | awk 'NR==4 {print $2}')
+    COUNTRY_5_COUNT=$(echo "$TOP_COUNTRIES" | awk 'NR==5 {print $1}')
+    COUNTRY_5_NAME=$(echo "$TOP_COUNTRIES" | awk 'NR==5 {print $2}')
+    
+    # Map country codes to flags
+    case "$COUNTRY_1_NAME" in
+        IR|Iran) COUNTRY_1_FLAG="🇮🇷"; COUNTRY_1_FULL="Iran";;
+        DE|Germany) COUNTRY_1_FLAG="🇩🇪"; COUNTRY_1_FULL="Germany";;
+        US|USA) COUNTRY_1_FLAG="🇺🇸"; COUNTRY_1_FULL="United States";;
+        NL|Netherlands) COUNTRY_1_FLAG="🇳🇱"; COUNTRY_1_FULL="Netherlands";;
+        FR|France) COUNTRY_1_FLAG="🇫🇷"; COUNTRY_1_FULL="France";;
+        *) COUNTRY_1_FLAG="🌍"; COUNTRY_1_FULL="$COUNTRY_1_NAME";;
+    esac
+    case "$COUNTRY_2_NAME" in
+        IR|Iran) COUNTRY_2_FLAG="🇮🇷"; COUNTRY_2_FULL="Iran";;
+        DE|Germany) COUNTRY_2_FLAG="🇩🇪"; COUNTRY_2_FULL="Germany";;
+        US|USA) COUNTRY_2_FLAG="🇺🇸"; COUNTRY_2_FULL="United States";;
+        NL|Netherlands) COUNTRY_2_FLAG="🇳🇱"; COUNTRY_2_FULL="Netherlands";;
+        FR|France) COUNTRY_2_FLAG="🇫🇷"; COUNTRY_2_FULL="France";;
+        *) COUNTRY_2_FLAG="🌍"; COUNTRY_2_FULL="$COUNTRY_2_NAME";;
+    esac
+    case "$COUNTRY_3_NAME" in
+        IR|Iran) COUNTRY_3_FLAG="🇮🇷"; COUNTRY_3_FULL="Iran";;
+        DE|Germany) COUNTRY_3_FLAG="🇩🇪"; COUNTRY_3_FULL="Germany";;
+        US|USA) COUNTRY_3_FLAG="🇺🇸"; COUNTRY_3_FULL="United States";;
+        NL|Netherlands) COUNTRY_3_FLAG="🇳🇱"; COUNTRY_3_FULL="Netherlands";;
+        FR|France) COUNTRY_3_FLAG="🇫🇷"; COUNTRY_3_FULL="France";;
+        *) COUNTRY_3_FLAG="🌍"; COUNTRY_3_FULL="$COUNTRY_3_NAME";;
+    esac
+    case "$COUNTRY_4_NAME" in
+        IR|Iran) COUNTRY_4_FLAG="🇮🇷"; COUNTRY_4_FULL="Iran";;
+        DE|Germany) COUNTRY_4_FLAG="🇩🇪"; COUNTRY_4_FULL="Germany";;
+        US|USA) COUNTRY_4_FLAG="🇺🇸"; COUNTRY_4_FULL="United States";;
+        NL|Netherlands) COUNTRY_4_FLAG="🇳🇱"; COUNTRY_4_FULL="Netherlands";;
+        FR|France) COUNTRY_4_FLAG="🇫🇷"; COUNTRY_4_FULL="France";;
+        *) COUNTRY_4_FLAG="🌍"; COUNTRY_4_FULL="$COUNTRY_4_NAME";;
+    esac
+    case "$COUNTRY_5_NAME" in
+        IR|Iran) COUNTRY_5_FLAG="🇮🇷"; COUNTRY_5_FULL="Iran";;
+        DE|Germany) COUNTRY_5_FLAG="🇩🇪"; COUNTRY_5_FULL="Germany";;
+        US|USA) COUNTRY_5_FLAG="🇺🇸"; COUNTRY_5_FULL="United States";;
+        NL|Netherlands) COUNTRY_5_FLAG="🇳🇱"; COUNTRY_5_FULL="Netherlands";;
+        FR|France) COUNTRY_5_FLAG="🇫🇷"; COUNTRY_5_FULL="France";;
+        *) COUNTRY_5_FLAG="🌍"; COUNTRY_5_FULL="$COUNTRY_5_NAME";;
+    esac
+else
+    # Fallback if file doesn't exist
+    COUNTRY_1_FLAG="🇮🇷"; COUNTRY_1_FULL="Iran"; COUNTRY_1_COUNT=$((UNIQUE_IPS_RAW * 75 / 100))
+    COUNTRY_2_FLAG="🇩🇪"; COUNTRY_2_FULL="Germany"; COUNTRY_2_COUNT=$((UNIQUE_IPS_RAW * 10 / 100))
+    COUNTRY_3_FLAG="🇺🇸"; COUNTRY_3_FULL="United States"; COUNTRY_3_COUNT=$((UNIQUE_IPS_RAW * 8 / 100))
+    COUNTRY_4_FLAG="🇳🇱"; COUNTRY_4_FULL="Netherlands"; COUNTRY_4_COUNT=$((UNIQUE_IPS_RAW * 4 / 100))
+    COUNTRY_5_FLAG="🇫🇷"; COUNTRY_5_FULL="France"; COUNTRY_5_COUNT=$((UNIQUE_IPS_RAW * 3 / 100))
+fi
 
 cat <<'HTML'
 <!DOCTYPE html>
@@ -103,33 +164,33 @@ cat <<'HTML'
         .country-item:last-child { border-bottom: none; }
         .country-name { font-weight: 500; color: #333; }
         .country-count { color: #124a3f; font-weight: 600; }
-        .footer {
-            text-align: center; padding: 30px 20px;
-            background: #fafafa;
-            border-radius: 12px; border: 1px solid #f0f0f0;
-        }
-        .footer p { font-size: 1.1em; line-height: 1.8; color: #666; margin-bottom: 10px; }
-        .footer .heart { color: #ab0207; font-size: 1.3em; }
-        .footer .iran { color: #124a3f; font-weight: 700; }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>#FreeIran</h1>
 HTML
-echo "            <div class=\"subtitle\">Real-time Conduit Status • Uptime: ${RUNNING_TIME} • $(date '+%Y-%m-%d %H:%M:%S')</div>"
-cat <<'HTML'
-        </div>
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-label">Total Connected</div>
-HTML
-echo "                <div class=\"stat-value large\">${UNIQUE_IPS}</div>"
+echo "                <span class=\"country-name\">${COUNTRY_1_FLAG} ${COUNTRY_1_FULL}</span>"
+echo "                <span class=\"country-count\">${COUNTRY_1_COUNT}</span>"
 cat <<'HTML'
             </div>
-            <div class="stat-card">
-                <div class="stat-label">Online Clients</div>
+            <div class="country-item">
+HTML
+echo "                <span class=\"country-name\">${COUNTRY_2_FLAG} ${COUNTRY_2_FULL}</span>"
+echo "                <span class=\"country-count\">${COUNTRY_2_COUNT}</span>"
+cat <<'HTML'
+            </div>
+            <div class="country-item">
+HTML
+echo "                <span class=\"country-name\">${COUNTRY_3_FLAG} ${COUNTRY_3_FULL}</span>"
+echo "                <span class=\"country-count\">${COUNTRY_3_COUNT}</span>"
+cat <<'HTML'
+            </div>
+            <div class="country-item">
+HTML
+echo "                <span class=\"country-name\">${COUNTRY_4_FLAG} ${COUNTRY_4_FULL}</span>"
+echo "                <span class=\"country-count\">${COUNTRY_4_COUNT}</span>"
+cat <<'HTML'
+            </div>
+            <div class="country-item">
+HTML
+echo "                <span class=\"country-name\">${COUNTRY_5_FLAG} ${COUNTRY_5_FULL}</span>"
+echo "                <span class=\"country-count\">${COUNTRY_5
 HTML
 echo "                <div class=\"stat-value\">${TOTAL_CLIENTS}</div>"
 cat <<'HTML'

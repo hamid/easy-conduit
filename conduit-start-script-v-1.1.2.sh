@@ -129,159 +129,13 @@ htpasswd -b -c /etc/nginx/auth/htpasswd iran iran
 # Create cgi-bin directory if it doesn't exist
 mkdir -p /usr/lib/cgi-bin
 
-# CGI script that returns HTML + conduit status with minimal #FreeIran design
-cat > /usr/lib/cgi-bin/conduit.cgi <<'EOF'
-#!/bin/bash
-echo 'Content-type: text/html'
-echo ''
-
-# Get conduit status
-STATUS_OUTPUT=$(sudo /usr/local/bin/conduit status 2>&1)
-
-# Parse values correctly
-CONNECTED=$(echo "$STATUS_OUTPUT" | awk 'NR==3 {print $4}')
-CONNECTING=$(echo "$STATUS_OUTPUT" | awk 'NR==3 {print $6}')
-UPLOAD=$(echo "$STATUS_OUTPUT" | awk '/Upload:/ {print $2, $3}')
-DOWNLOAD=$(echo "$STATUS_OUTPUT" | awk '/Download:/ {print $2, $3}')
-RUNNING_TIME=$(echo "$STATUS_OUTPUT" | awk -F'[()]' 'NR==2 {print $2}')
-
-# Calculate total clients
-TOTAL_CLIENTS=$((CONNECTED + CONNECTING))
-
-# Get unique IPs from docker logs (approximate)
-UNIQUE_IPS=$(docker logs conduit 2>&1 | grep -oE '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | sort -u | wc -l | xargs)
-
-cat <<HTML
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="refresh" content="10">
-    <title>#FreeIran - Conduit Status</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-            min-height: 100vh; display: flex; align-items: center; justify-content: center;
-            padding: 20px; color: white;
-        }
-        .container { max-width: 800px; width: 100%; }
-        .header { text-align: center; margin-bottom: 40px; }
-        .header h1 {
-            font-size: 3.5em; font-weight: 800; margin-bottom: 10px;
-            color: #00ff88; text-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
-        }
-        .header .subtitle { font-size: 1.1em; opacity: 0.9; color: #a0d4ff; }
-        .stats-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px; margin-bottom: 30px;
-        }
-        .stat-card {
-            background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px);
-            border-radius: 15px; padding: 25px; text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.2); transition: all 0.3s ease;
-        }
-        .stat-card:hover { background: rgba(255, 255, 255, 0.15); transform: translateY(-3px); }
-        .stat-label {
-            font-size: 0.9em; text-transform: uppercase; letter-spacing: 1px;
-            opacity: 0.8; margin-bottom: 10px;
-        }
-        .stat-value {
-            font-size: 2.5em; font-weight: 700; color: #00ff88;
-            text-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
-        }
-        .stat-value.large { font-size: 3.5em; }
-        .country-list {
-            background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px);
-            border-radius: 15px; padding: 30px; border: 1px solid rgba(255, 255, 255, 0.2);
-            margin-bottom: 30px;
-        }
-        .country-list h2 { font-size: 1.3em; margin-bottom: 20px; color: #00ff88; text-align: center; }
-        .country-item {
-            display: flex; justify-content: space-between; padding: 12px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1); font-size: 1.1em;
-        }
-        .country-item:last-child { border-bottom: none; }
-        .country-name { font-weight: 500; }
-        .country-count { color: #00ff88; font-weight: 600; }
-        .footer {
-            text-align: center; padding: 30px 20px;
-            background: rgba(0, 0, 0, 0.2); backdrop-filter: blur(10px);
-            border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .footer p { font-size: 1.1em; line-height: 1.8; color: #a0d4ff; margin-bottom: 10px; }
-        .footer .heart { color: #ff6b9d; font-size: 1.3em; }
-        .footer .iran { color: #00ff88; font-weight: 700; }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>#FreeIran</h1>
-            <div class="subtitle">Real-time Conduit Status • Uptime: \${RUNNING_TIME} • \$(date '+%Y-%m-%d %H:%M:%S')</div>
-        </div>
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-label">Unique IPs</div>
-                <div class="stat-value large">\${UNIQUE_IPS}</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">Connected</div>
-                <div class="stat-value">\${CONNECTED}</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">Connecting</div>
-                <div class="stat-value">\${CONNECTING}</div>
-            </div>
-        </div>
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-label">Upload</div>
-                <div class="stat-value" style="font-size: 1.8em;">\${UPLOAD}</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">Download</div>
-                <div class="stat-value" style="font-size: 1.8em;">\${DOWNLOAD}</div>
-            </div>
-        </div>
-        <div class="country-list">
-            <h2>🌍 TOP 5 BY UNIQUE IPs</h2>
-            <div class="country-item">
-                <span class="country-name">🇮🇷 Iran</span>
-                <span class="country-count">\$((UNIQUE_IPS * 75 / 100))</span>
-            </div>
-            <div class="country-item">
-                <span class="country-name">🇩🇪 Germany</span>
-                <span class="country-count">\$((UNIQUE_IPS * 10 / 100))</span>
-            </div>
-            <div class="country-item">
-                <span class="country-name">🇺🇸 United States</span>
-                <span class="country-count">\$((UNIQUE_IPS * 8 / 100))</span>
-            </div>
-            <div class="country-item">
-                <span class="country-name">🇳🇱 Netherlands</span>
-                <span class="country-count">\$((UNIQUE_IPS * 4 / 100))</span>
-            </div>
-            <div class="country-item">
-                <span class="country-name">🇫🇷 France</span>
-                <span class="country-count">\$((UNIQUE_IPS * 3 / 100))</span>
-            </div>
-        </div>
-        <div class="footer">
-            <p>Internet should not be blocked in any country.</p>
-            <p>Access to information is a fundamental human right.</p>
-            <p>We <span class="heart">♥</span> <span class="iran">Iranians</span> need internet freedom.</p>
-            <p style="margin-top: 15px; opacity: 0.7; font-size: 0.95em;">Together, we break barriers. Together, we build bridges.</p>
-        </div>
-    </div>
-</body>
-</html>
-HTML
-EOF
+# Download CGI scripts from GitHub
+echo "[+] Downloading CGI scripts from GitHub..."
+retry curl -fsSL -o /usr/lib/cgi-bin/conduit.cgi https://raw.githubusercontent.com/hamid/easy-conduit/master/conduit-clean.cgi
+retry curl -fsSL -o /usr/lib/cgi-bin/conduit-raw.cgi https://raw.githubusercontent.com/hamid/easy-conduit/master/conduit-raw.cgi
 
 chmod +x /usr/lib/cgi-bin/conduit.cgi
+chmod +x /usr/lib/cgi-bin/conduit-raw.cgi
 
 # Nginx site config for CGI + Basic Auth
 cat > /etc/nginx/sites-available/conduit-logs <<'EOF'
@@ -303,6 +157,12 @@ server {
   location = /conduit.cgi {
     include /etc/nginx/fastcgi_params;
     fastcgi_param SCRIPT_FILENAME /usr/lib/cgi-bin/conduit.cgi;
+    fastcgi_pass unix:/run/fcgiwrap.socket;
+  }
+
+  location = /raw {
+    include /etc/nginx/fastcgi_params;
+    fastcgi_param SCRIPT_FILENAME /usr/lib/cgi-bin/conduit-raw.cgi;
     fastcgi_pass unix:/run/fcgiwrap.socket;
   }
 }
