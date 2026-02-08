@@ -12,19 +12,6 @@ chmod +x conduit-start-script-v-1.1.2.sh
 sudo bash conduit-start-script-v-1.1.2.sh
 ```
 
-### 🐧 Supported Operating Systems
-
-The script automatically detects your OS and uses the appropriate package manager:
-
-| Distribution | Versions | Package Manager | Status |
-|--------------|----------|-----------------|--------|
-| **Ubuntu** | 18.04+ | apt | ✅ Tested |
-| **Debian** | 10+ | apt | ✅ Tested |
-| **CentOS** | 7, 8, Stream | yum/dnf | ✅ Supported |
-| **AlmaLinux** | 8, 9 | dnf | ✅ Supported |
-| **Rocky Linux** | 8, 9 | dnf | ✅ Supported |
-| **Fedora** | 35+ | dnf | ✅ Supported |
-
 **That's it!** In ~5 minutes you'll have:
 - ✅ Psiphon Conduit running in Docker
 - ✅ Web dashboard at `http://YOUR_SERVER_IP/`
@@ -65,6 +52,19 @@ Programmatic access to all metrics:
   ]
 }
 ```
+
+### 🐧 Supported Operating Systems
+
+The script automatically detects your OS and uses the appropriate package manager:
+
+| Distribution | Versions | Package Manager | Status |
+|--------------|----------|-----------------|--------|
+| **Ubuntu** | 18.04+ | apt | ✅ Tested |
+| **Debian** | 10+ | apt | ✅ Tested |
+| **CentOS** | 7, 8, Stream | yum/dnf | ✅ Supported |
+| **AlmaLinux** | 8, 9 | dnf | ✅ Supported |
+| **Rocky Linux** | 8, 9 | dnf | ✅ Supported |
+| **Fedora** | 35+ | dnf | ✅ Supported |
 
 ## 🔧 What Gets Installed
 
