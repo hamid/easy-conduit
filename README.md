@@ -11,7 +11,7 @@ This repository contains scripts to deploy a Psiphon Conduit node with a web-bas
 Run the deployment script on a fresh Ubuntu/Debian server:
 
 ```bash
-wget https://raw.githubusercontent.com/[your-repo]/conduit/main/conduit-start-script-v-1.1.2.sh
+wget https://raw.githubusercontent.com/hamid/easy-conduit/master/conduit-start-script-v-1.1.2.sh
 chmod +x conduit-start-script-v-1.1.2.sh
 sudo bash conduit-start-script-v-1.1.2.sh
 ```
