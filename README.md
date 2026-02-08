@@ -4,13 +4,26 @@ One-command deployment of Psiphon Conduit with a beautiful web dashboard to moni
 
 ## 🚀 Quick Start
 
-Deploy on a fresh Ubuntu/Debian server with a single command:
+Deploy on any Linux server with a single command:
 
 ```bash
 wget https://raw.githubusercontent.com/hamid/easy-conduit/master/conduit-start-script-v-1.1.2.sh
 chmod +x conduit-start-script-v-1.1.2.sh
 sudo bash conduit-start-script-v-1.1.2.sh
 ```
+
+### 🐧 Supported Operating Systems
+
+The script automatically detects your OS and uses the appropriate package manager:
+
+| Distribution | Versions | Package Manager | Status |
+|--------------|----------|-----------------|--------|
+| **Ubuntu** | 18.04+ | apt | ✅ Tested |
+| **Debian** | 10+ | apt | ✅ Tested |
+| **CentOS** | 7, 8, Stream | yum/dnf | ✅ Supported |
+| **AlmaLinux** | 8, 9 | dnf | ✅ Supported |
+| **Rocky Linux** | 8, 9 | dnf | ✅ Supported |
+| **Fedora** | 35+ | dnf | ✅ Supported |
 
 **That's it!** In ~5 minutes you'll have:
 - ✅ Psiphon Conduit running in Docker
@@ -57,17 +70,23 @@ Programmatic access to all metrics:
 
 The deployment script automatically:
 
-1. **System Updates**: Upgrades all packages to latest versions
-2. **Docker**: Installs Docker CE for container management
-3. **Firewall**: Configures UFW with:
+1. **System Detection**: Auto-detects OS and configures appropriate package manager
+2. **System Updates**: Upgrades all packages to latest versions
+3. **Docker**: Installs Docker CE for container management
+4. **Firewall**: Configures firewall (UFW or firewalld) with:
    - SSH (22), HTTP (80) open
    - Torrent ports blocked
-4. **Psiphon Conduit**: 
+5. **Psiphon Conduit**: 
    - Max clients: 200
    - Bandwidth: 5 Mbps per client
    - Running in Docker container
-5. **Web Server**: Nginx + fcgiwrap for CGI
-6. **Monitoring**: Background tracker script for real-time stats
+6. **Web Server**: Nginx + fcgiwrap for CGI
+7. **Monitoring**: Background tracker script for real-time stats
+
+### Package Manager Support
+- **Debian/Ubuntu**: Uses `apt-get` with UFW firewall
+- **RHEL-based** (CentOS/AlmaLinux/Rocky/Fedora): Uses `dnf`/`yum` with firewalld
+- Automatically handles package name differences across distributions
 
 ## 🌐 Access Your Dashboard
 
