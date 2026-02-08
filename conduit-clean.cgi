@@ -165,33 +165,33 @@ cat <<'HTML'
         .country-item:last-child { border-bottom: none; }
         .country-name { font-weight: 500; color: #333; }
         .country-count { color: #124a3f; font-weight: 600; }
+        .footer {
+            text-align: center; padding: 30px 20px;
+            background: #fafafa;
+            border-radius: 12px; border: 1px solid #f0f0f0;
+        }
+        .footer p { font-size: 1.1em; line-height: 1.8; color: #666; margin-bottom: 10px; }
+        .footer .heart { color: #ab0207; font-size: 1.3em; }
+        .footer .iran { color: #124a3f; font-weight: 700; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>#FreeIran</h1>
 HTML
-echo "                <span class=\"country-name\">${COUNTRY_1_FLAG} ${COUNTRY_1_FULL}</span>"
-echo "                <span class=\"country-count\">${COUNTRY_1_COUNT}</span>"
+echo "            <div class=\"subtitle\">Real-time Conduit Status • Uptime: ${RUNNING_TIME} • $(date '+%Y-%m-%d %H:%M:%S')</div>"
+cat <<'HTML'
+        </div>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Total Connected</div>
+HTML
+echo "                <div class=\"stat-value large\">${UNIQUE_IPS}</div>"
 cat <<'HTML'
             </div>
-            <div class="country-item">
-HTML
-echo "                <span class=\"country-name\">${COUNTRY_2_FLAG} ${COUNTRY_2_FULL}</span>"
-echo "                <span class=\"country-count\">${COUNTRY_2_COUNT}</span>"
-cat <<'HTML'
-            </div>
-            <div class="country-item">
-HTML
-echo "                <span class=\"country-name\">${COUNTRY_3_FLAG} ${COUNTRY_3_FULL}</span>"
-echo "                <span class=\"country-count\">${COUNTRY_3_COUNT}</span>"
-cat <<'HTML'
-            </div>
-            <div class="country-item">
-HTML
-echo "                <span class=\"country-name\">${COUNTRY_4_FLAG} ${COUNTRY_4_FULL}</span>"
-echo "                <span class=\"country-count\">${COUNTRY_4_COUNT}</span>"
-cat <<'HTML'
-            </div>
-            <div class="country-item">
-HTML
-echo "                <span class=\"country-name\">${COUNTRY_5_FLAG} ${COUNTRY_5_FULL}</span>"
-echo "                <span class=\"country-count\">${COUNTRY_5
+            <div class="stat-card">
+                <div class="stat-label">Online Clients</div>
 HTML
 echo "                <div class=\"stat-value\">${TOTAL_CLIENTS}</div>"
 cat <<'HTML'
