@@ -20,7 +20,7 @@ retry() {
   done
 }
 
-# Wait for package manager lock to be released
+# Wait for package manager lock to be released (Debian/Ubuntu)
 wait_for_apt_lock() {
   echo "[+] Waiting for package manager lock to be released..."
   local max_wait=300  # 5 minutes max wait
@@ -45,56 +45,121 @@ wait_for_apt_lock() {
   echo "[+] Package manager is now available"
 }
 
-# Detect package manager (Ubuntu/Debian)
-APT=0
-if need_cmd apt-get; then APT=1; fi
-if [ "$APT" -ne 1 ]; then
-  echo "[!] This script currently supports Debian/Ubuntu (apt-get)."
-  exit 1
-fi
+# Detect OS and package manager
+detect_os() {
+  if [ -f /etc/os-release ]; then
+    . /etc/os-release
+    OS_ID="${ID}"
+    OS_VERSION="${VERSION_ID}"
+    echo "[+] Detected OS: ${NAME} ${VERSION_ID}"
+  else
+    echo "[!] Cannot detect OS. /etc/os-release not found."
+    exit 1
+  fi
+  
+  # Determine package manager and commands
+  if need_cmd apt-get; then
+    PKG_MANAGER="apt"
+    PKG_UPDATE="apt-get update -y"
+    PKG_UPGRADE="apt-get upgrade -y"
+    PKG_INSTALL="apt-get install -y"
+    FIREWALL_CMD="ufw"
+    NGINX_USER="www-data"
+    export DEBIAN_FRONTEND=noninteractive
+    echo "[+] Using apt package manager"
+  elif need_cmd dnf; then
+    PKG_MANAGER="dnf"
+    PKG_UPDATE="dnf check-update || true"
+    PKG_UPGRADE="dnf upgrade -y"
+    PKG_INSTALL="dnf install -y"
+    FIREWALL_CMD="firewalld"
+    NGINX_USER="nginx"
+    echo "[+] Using dnf package manager"
+  elif need_cmd yum; then
+    PKG_MANAGER="yum"
+    PKG_UPDATE="yum check-update || true"
+    PKG_UPGRADE="yum upgrade -y"
+    PKG_INSTALL="yum install -y"
+    FIREWALL_CMD="firewalld"
+    NGINX_USER="nginx"
+    echo "[+] Using yum package manager"
+  else
+    echo "[!] No supported package manager found (apt-get, dnf, or yum)."
+    exit 1
+  fi
+}
+
+detect_os
 
 # ---------------------------
 # 1) Base packages
 # ---------------------------
 echo "[+] Updating packages..."
-export DEBIAN_FRONTEND=noninteractive
 
-# Wait for any existing package operations to complete
-wait_for_apt_lock
+# Wait for any existing package operations to complete (Debian/Ubuntu only)
+if [ "$PKG_MANAGER" = "apt" ]; then
+  wait_for_apt_lock
+fi
 
-retry apt-get update -y
-retry apt-get upgrade -y
+retry $PKG_UPDATE
+retry $PKG_UPGRADE
 
 echo "[+] Installing essentials..."
-retry apt-get install -y curl ca-certificates gnupg lsb-release ufw
+if [ "$PKG_MANAGER" = "apt" ]; then
+  retry $PKG_INSTALL curl ca-certificates gnupg lsb-release ufw
+else
+  # RHEL-based systems
+  retry $PKG_INSTALL curl ca-certificates gnupg2 firewalld
+fi
 
 # ---------------------------
 # 2) Firewall: open ports + block common torrent ports
 # ---------------------------
-echo "[+] Configuring UFW firewall..."
+echo "[+] Configuring firewall..."
 
-ufw --force reset
-ufw default deny incoming
-ufw default allow outgoing
+if [ "$FIREWALL_CMD" = "ufw" ]; then
+  # UFW (Ubuntu/Debian)
+  ufw --force reset
+  ufw default deny incoming
+  ufw default allow outgoing
 
-# Allow SSH + HTTP
-ufw allow 22/tcp
-ufw allow 80/tcp
+  # Allow SSH + HTTP
+  ufw allow 22/tcp
+  ufw allow 80/tcp
 
-# (Optional) If later you add HTTPS, open 443:
-# ufw allow 443/tcp
+  # Block torrent ports (OUTBOUND)
+  ufw deny out 6881:6889/tcp || true
+  ufw deny out 6881:6889/udp || true
+  ufw deny out 6969/tcp || true
+  ufw deny out 6969/udp || true
+  ufw deny out 51413/tcp || true
+  ufw deny out 51413/udp || true
 
-# "Block torrent ports" (OUTBOUND) - this is NOT a guarantee.
-# Common BitTorrent/trackers defaults: 6881-6889, 6969, and often 51413 (Transmission)
-ufw deny out 6881:6889/tcp || true
-ufw deny out 6881:6889/udp || true
-ufw deny out 6969/tcp || true
-ufw deny out 6969/udp || true
-ufw deny out 51413/tcp || true
-ufw deny out 51413/udp || true
-
-ufw --force enable
-ufw status verbose || true
+  ufw --force enable
+  ufw status verbose || true
+  
+else
+  # firewalld (RHEL-based: CentOS, AlmaLinux, Fedora)
+  systemctl enable --now firewalld
+  
+  # Set default zones
+  firewall-cmd --set-default-zone=public
+  
+  # Allow SSH + HTTP
+  firewall-cmd --permanent --add-service=ssh
+  firewall-cmd --permanent --add-service=http
+  
+  # Block torrent ports (OUTBOUND)
+  firewall-cmd --permanent --direct --add-rule ipv4 filter OUTPUT 0 -p tcp --dport 6881:6889 -j DROP || true
+  firewall-cmd --permanent --direct --add-rule ipv4 filter OUTPUT 0 -p udp --dport 6881:6889 -j DROP || true
+  firewall-cmd --permanent --direct --add-rule ipv4 filter OUTPUT 0 -p tcp --dport 6969 -j DROP || true
+  firewall-cmd --permanent --direct --add-rule ipv4 filter OUTPUT 0 -p udp --dport 6969 -j DROP || true
+  firewall-cmd --permanent --direct --add-rule ipv4 filter OUTPUT 0 -p tcp --dport 51413 -j DROP || true
+  firewall-cmd --permanent --direct --add-rule ipv4 filter OUTPUT 0 -p udp --dport 51413 -j DROP || true
+  
+  firewall-cmd --reload
+  firewall-cmd --list-all || true
+fi
 
 # ---------------------------
 # 3) Install Docker
@@ -149,7 +214,18 @@ fi
 # 5) Web server on port 80 showing conduit status
 # ---------------------------
 echo "[+] Installing nginx + fcgiwrap for simple CGI status page..."
-retry apt-get install -y nginx fcgiwrap
+
+if [ "$PKG_MANAGER" = "apt" ]; then
+  retry $PKG_INSTALL nginx fcgiwrap
+else
+  # RHEL-based: need EPEL for fcgiwrap
+  if [ "$PKG_MANAGER" = "dnf" ]; then
+    retry $PKG_INSTALL epel-release
+  elif [ "$PKG_MANAGER" = "yum" ]; then
+    retry $PKG_INSTALL epel-release
+  fi
+  retry $PKG_INSTALL nginx fcgiwrap spawn-fcgi
+fi
 
 # Create cgi-bin directory if it doesn't exist
 mkdir -p /usr/lib/cgi-bin
@@ -162,12 +238,14 @@ retry curl -fsSL -o /usr/lib/cgi-bin/conduit-raw.cgi https://raw.githubuserconte
 chmod +x /usr/lib/cgi-bin/conduit.cgi
 chmod +x /usr/lib/cgi-bin/conduit-raw.cgi
 
-# Allow www-data to run conduit command without password (for CGI scripts)
-echo "www-data ALL=(ALL) NOPASSWD: /usr/local/bin/conduit" | tee /etc/sudoers.d/www-data-conduit
-chmod 0440 /etc/sudoers.d/www-data-conduit
+# Allow nginx user to run conduit command without password (for CGI scripts)
+echo "${NGINX_USER} ALL=(ALL) NOPASSWD: /usr/local/bin/conduit" | tee /etc/sudoers.d/${NGINX_USER}-conduit
+chmod 0440 /etc/sudoers.d/${NGINX_USER}-conduit
 
 # Nginx site config for CGI
-cat > /etc/nginx/sites-available/conduit-logs <<'EOF'
+if [ "$PKG_MANAGER" = "apt" ]; then
+  # Debian/Ubuntu: uses sites-available/sites-enabled
+  cat > /etc/nginx/sites-available/conduit-logs <<'EOF'
 server {
   listen 80 default_server;
   listen [::]:80 default_server;
@@ -194,12 +272,46 @@ server {
 }
 EOF
 
-rm -f /etc/nginx/sites-enabled/default
-ln -sf /etc/nginx/sites-available/conduit-logs /etc/nginx/sites-enabled/conduit-logs
+  rm -f /etc/nginx/sites-enabled/default
+  ln -sf /etc/nginx/sites-available/conduit-logs /etc/nginx/sites-enabled/conduit-logs
+  
+else
+  # RHEL-based: uses conf.d
+  cat > /etc/nginx/conf.d/conduit-logs.conf <<'EOF'
+server {
+  listen 80 default_server;
+  listen [::]:80 default_server;
+
+  server_name _;
+
+  location = / {
+    include /etc/nginx/fastcgi_params;
+    fastcgi_param SCRIPT_FILENAME /usr/lib/cgi-bin/conduit.cgi;
+    fastcgi_pass unix:/run/fcgiwrap.socket;
+  }
+
+  location = /conduit.cgi {
+    include /etc/nginx/fastcgi_params;
+    fastcgi_param SCRIPT_FILENAME /usr/lib/cgi-bin/conduit.cgi;
+    fastcgi_pass unix:/run/fcgiwrap.socket;
+  }
+
+  location = /raw {
+    include /etc/nginx/fastcgi_params;
+    fastcgi_param SCRIPT_FILENAME /usr/lib/cgi-bin/conduit-raw.cgi;
+    fastcgi_pass unix:/run/fcgiwrap.socket;
+  }
+}
+EOF
+
+  # Remove default server block
+  sed -i 's/listen.*80 default_server;//g' /etc/nginx/nginx.conf 2>/dev/null || true
+fi
 
 # Ensure fcgiwrap socket/service and nginx start on boot
-systemctl enable --now fcgiwrap
+systemctl enable --now fcgiwrap || systemctl enable --now spawn-fcgi
 nginx -t
+systemctl enable --now nginx
 systemctl restart nginx
 
 echo "[+] Web dashboard available at: http://SERVER_IP/"
