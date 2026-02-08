@@ -20,6 +20,31 @@ retry() {
   done
 }
 
+# Wait for package manager lock to be released
+wait_for_apt_lock() {
+  echo "[+] Waiting for package manager lock to be released..."
+  local max_wait=300  # 5 minutes max wait
+  local waited=0
+  
+  while fuser /var/lib/dpkg/lock-frontend >/dev/null 2>&1 || \
+        fuser /var/lib/dpkg/lock >/dev/null 2>&1 || \
+        fuser /var/lib/apt/lists/lock >/dev/null 2>&1; do
+    
+    if [ $waited -ge $max_wait ]; then
+      echo "[!] Timeout waiting for apt lock. Killing blocking processes..."
+      killall -9 apt apt-get unattended-upgrade 2>/dev/null || true
+      sleep 5
+      break
+    fi
+    
+    echo "[*] Package manager is locked (likely unattended-upgrades). Waiting... (${waited}s/${max_wait}s)"
+    sleep 10
+    waited=$((waited + 10))
+  done
+  
+  echo "[+] Package manager is now available"
+}
+
 # Detect package manager (Ubuntu/Debian)
 APT=0
 if need_cmd apt-get; then APT=1; fi
@@ -33,6 +58,10 @@ fi
 # ---------------------------
 echo "[+] Updating packages..."
 export DEBIAN_FRONTEND=noninteractive
+
+# Wait for any existing package operations to complete
+wait_for_apt_lock
+
 retry apt-get update -y
 retry apt-get upgrade -y
 
