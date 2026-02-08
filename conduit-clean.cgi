@@ -31,59 +31,60 @@ fi
 GEOIP_CACHE="/opt/conduit/traffic_stats/geoip_cache"
 if [ -f "$GEOIP_CACHE" ]; then
     # Parse geoip_cache and count by country, get top 5
-    TOP_COUNTRIES=$(awk '{print $2}' "$GEOIP_CACHE" | sort | uniq -c | sort -rn | head -5)
+    # Format: IP|Country Name (e.g., 1.2.3.4|Iran, Islamic Republic of)
+    TOP_COUNTRIES=$(awk -F'|' '{print $2}' "$GEOIP_CACHE" | sort | uniq -c | sort -rn | head -5)
     
-    # Extract individual country counts
+    # Extract individual country counts and names
     COUNTRY_1_COUNT=$(echo "$TOP_COUNTRIES" | awk 'NR==1 {print $1}')
-    COUNTRY_1_NAME=$(echo "$TOP_COUNTRIES" | awk 'NR==1 {print $2}')
+    COUNTRY_1_NAME=$(echo "$TOP_COUNTRIES" | awk 'NR==1 {$1=""; print substr($0,2)}')
     COUNTRY_2_COUNT=$(echo "$TOP_COUNTRIES" | awk 'NR==2 {print $1}')
-    COUNTRY_2_NAME=$(echo "$TOP_COUNTRIES" | awk 'NR==2 {print $2}')
+    COUNTRY_2_NAME=$(echo "$TOP_COUNTRIES" | awk 'NR==2 {$1=""; print substr($0,2)}')
     COUNTRY_3_COUNT=$(echo "$TOP_COUNTRIES" | awk 'NR==3 {print $1}')
-    COUNTRY_3_NAME=$(echo "$TOP_COUNTRIES" | awk 'NR==3 {print $2}')
+    COUNTRY_3_NAME=$(echo "$TOP_COUNTRIES" | awk 'NR==3 {$1=""; print substr($0,2)}')
     COUNTRY_4_COUNT=$(echo "$TOP_COUNTRIES" | awk 'NR==4 {print $1}')
-    COUNTRY_4_NAME=$(echo "$TOP_COUNTRIES" | awk 'NR==4 {print $2}')
+    COUNTRY_4_NAME=$(echo "$TOP_COUNTRIES" | awk 'NR==4 {$1=""; print substr($0,2)}')
     COUNTRY_5_COUNT=$(echo "$TOP_COUNTRIES" | awk 'NR==5 {print $1}')
-    COUNTRY_5_NAME=$(echo "$TOP_COUNTRIES" | awk 'NR==5 {print $2}')
+    COUNTRY_5_NAME=$(echo "$TOP_COUNTRIES" | awk 'NR==5 {$1=""; print substr($0,2)}')
     
     # Map country codes to flags
     case "$COUNTRY_1_NAME" in
-        IR|Iran) COUNTRY_1_FLAG="🇮🇷"; COUNTRY_1_FULL="Iran";;
-        DE|Germany) COUNTRY_1_FLAG="🇩🇪"; COUNTRY_1_FULL="Germany";;
-        US|USA) COUNTRY_1_FLAG="🇺🇸"; COUNTRY_1_FULL="United States";;
-        NL|Netherlands) COUNTRY_1_FLAG="🇳🇱"; COUNTRY_1_FULL="Netherlands";;
-        FR|France) COUNTRY_1_FLAG="🇫🇷"; COUNTRY_1_FULL="France";;
+        *Iran*) COUNTRY_1_FLAG="🇮🇷"; COUNTRY_1_FULL="Iran";;
+        *Germany*) COUNTRY_1_FLAG="🇩🇪"; COUNTRY_1_FULL="Germany";;
+        *United\ States*|*USA*) COUNTRY_1_FLAG="🇺🇸"; COUNTRY_1_FULL="United States";;
+        *Netherlands*) COUNTRY_1_FLAG="🇳🇱"; COUNTRY_1_FULL="Netherlands";;
+        *France*) COUNTRY_1_FLAG="🇫🇷"; COUNTRY_1_FULL="France";;
         *) COUNTRY_1_FLAG="🌍"; COUNTRY_1_FULL="$COUNTRY_1_NAME";;
     esac
     case "$COUNTRY_2_NAME" in
-        IR|Iran) COUNTRY_2_FLAG="🇮🇷"; COUNTRY_2_FULL="Iran";;
-        DE|Germany) COUNTRY_2_FLAG="🇩🇪"; COUNTRY_2_FULL="Germany";;
-        US|USA) COUNTRY_2_FLAG="🇺🇸"; COUNTRY_2_FULL="United States";;
-        NL|Netherlands) COUNTRY_2_FLAG="🇳🇱"; COUNTRY_2_FULL="Netherlands";;
-        FR|France) COUNTRY_2_FLAG="🇫🇷"; COUNTRY_2_FULL="France";;
+        *Iran*) COUNTRY_2_FLAG="🇮🇷"; COUNTRY_2_FULL="Iran";;
+        *Germany*) COUNTRY_2_FLAG="🇩🇪"; COUNTRY_2_FULL="Germany";;
+        *United\ States*|*USA*) COUNTRY_2_FLAG="🇺🇸"; COUNTRY_2_FULL="United States";;
+        *Netherlands*) COUNTRY_2_FLAG="🇳🇱"; COUNTRY_2_FULL="Netherlands";;
+        *France*) COUNTRY_2_FLAG="🇫🇷"; COUNTRY_2_FULL="France";;
         *) COUNTRY_2_FLAG="🌍"; COUNTRY_2_FULL="$COUNTRY_2_NAME";;
     esac
     case "$COUNTRY_3_NAME" in
-        IR|Iran) COUNTRY_3_FLAG="🇮🇷"; COUNTRY_3_FULL="Iran";;
-        DE|Germany) COUNTRY_3_FLAG="🇩🇪"; COUNTRY_3_FULL="Germany";;
-        US|USA) COUNTRY_3_FLAG="🇺🇸"; COUNTRY_3_FULL="United States";;
-        NL|Netherlands) COUNTRY_3_FLAG="🇳🇱"; COUNTRY_3_FULL="Netherlands";;
-        FR|France) COUNTRY_3_FLAG="🇫🇷"; COUNTRY_3_FULL="France";;
+        *Iran*) COUNTRY_3_FLAG="🇮🇷"; COUNTRY_3_FULL="Iran";;
+        *Germany*) COUNTRY_3_FLAG="🇩🇪"; COUNTRY_3_FULL="Germany";;
+        *United\ States*|*USA*) COUNTRY_3_FLAG="🇺🇸"; COUNTRY_3_FULL="United States";;
+        *Netherlands*) COUNTRY_3_FLAG="🇳🇱"; COUNTRY_3_FULL="Netherlands";;
+        *France*) COUNTRY_3_FLAG="🇫🇷"; COUNTRY_3_FULL="France";;
         *) COUNTRY_3_FLAG="🌍"; COUNTRY_3_FULL="$COUNTRY_3_NAME";;
     esac
     case "$COUNTRY_4_NAME" in
-        IR|Iran) COUNTRY_4_FLAG="🇮🇷"; COUNTRY_4_FULL="Iran";;
-        DE|Germany) COUNTRY_4_FLAG="🇩🇪"; COUNTRY_4_FULL="Germany";;
-        US|USA) COUNTRY_4_FLAG="🇺🇸"; COUNTRY_4_FULL="United States";;
-        NL|Netherlands) COUNTRY_4_FLAG="🇳🇱"; COUNTRY_4_FULL="Netherlands";;
-        FR|France) COUNTRY_4_FLAG="🇫🇷"; COUNTRY_4_FULL="France";;
+        *Iran*) COUNTRY_4_FLAG="🇮🇷"; COUNTRY_4_FULL="Iran";;
+        *Germany*) COUNTRY_4_FLAG="🇩🇪"; COUNTRY_4_FULL="Germany";;
+        *United\ States*|*USA*) COUNTRY_4_FLAG="🇺🇸"; COUNTRY_4_FULL="United States";;
+        *Netherlands*) COUNTRY_4_FLAG="🇳🇱"; COUNTRY_4_FULL="Netherlands";;
+        *France*) COUNTRY_4_FLAG="🇫🇷"; COUNTRY_4_FULL="France";;
         *) COUNTRY_4_FLAG="🌍"; COUNTRY_4_FULL="$COUNTRY_4_NAME";;
     esac
     case "$COUNTRY_5_NAME" in
-        IR|Iran) COUNTRY_5_FLAG="🇮🇷"; COUNTRY_5_FULL="Iran";;
-        DE|Germany) COUNTRY_5_FLAG="🇩🇪"; COUNTRY_5_FULL="Germany";;
-        US|USA) COUNTRY_5_FLAG="🇺🇸"; COUNTRY_5_FULL="United States";;
-        NL|Netherlands) COUNTRY_5_FLAG="🇳🇱"; COUNTRY_5_FULL="Netherlands";;
-        FR|France) COUNTRY_5_FLAG="🇫🇷"; COUNTRY_5_FULL="France";;
+        *Iran*) COUNTRY_5_FLAG="🇮🇷"; COUNTRY_5_FULL="Iran";;
+        *Germany*) COUNTRY_5_FLAG="🇩🇪"; COUNTRY_5_FULL="Germany";;
+        *United\ States*|*USA*) COUNTRY_5_FLAG="🇺🇸"; COUNTRY_5_FULL="United States";;
+        *Netherlands*) COUNTRY_5_FLAG="🇳🇱"; COUNTRY_5_FULL="Netherlands";;
+        *France*) COUNTRY_5_FLAG="🇫🇷"; COUNTRY_5_FULL="France";;
         *) COUNTRY_5_FLAG="🌍"; COUNTRY_5_FULL="$COUNTRY_5_NAME";;
     esac
 else

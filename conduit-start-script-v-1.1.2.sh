@@ -168,13 +168,13 @@ server {
 }
 EOF
 
-rm -f /etc/nginx/sites-enabled/default || true
+rm -f /etc/nginx/sites-enabled/default
 ln -sf /etc/nginx/sites-available/conduit-logs /etc/nginx/sites-enabled/conduit-logs
 
 # Ensure fcgiwrap socket/service and nginx start on boot
 systemctl enable --now fcgiwrap
 nginx -t
-systemctl enable --now nginx
+systemctl restart nginx
 
 echo "[+] Web logs available at: http://SERVER_IP/  (basic auth iran / iran)"
 echo "[+] firstboot completed: $(date -Is)"
