@@ -116,9 +116,11 @@ fi
 # ---------------------------
 # 2) Firewall: configure only on Ubuntu/Debian
 # ---------------------------
+# 2) Firewall: configure only on Ubuntu/Debian
+# ---------------------------
 # Note: On RHEL-based systems (CentOS, AlmaLinux, Rocky, Fedora), 
-# we skip firewall configuration as it's already enabled by default
-# and DBus conflicts can cause cloud-init failures
+# we skip full firewall configuration to avoid DBus conflicts during cloud-init,
+# but we still enable HTTP service
 if [ "$FIREWALL_CMD" = "ufw" ]; then
   echo "[+] Configuring firewall (Ubuntu/Debian)..."
   
@@ -142,7 +144,12 @@ if [ "$FIREWALL_CMD" = "ufw" ]; then
   ufw --force enable
   ufw status verbose || true
 else
-  echo "[+] Skipping firewall configuration on RHEL-based systems (firewalld already enabled)"
+  echo "[+] Configuring firewall (RHEL-based systems)..."
+  # On RHEL, firewalld is already running with default config
+  # Just ensure HTTP is allowed
+  firewall-cmd --permanent --add-service=http 2>/dev/null || true
+  firewall-cmd --reload 2>/dev/null || true
+  echo "[+] Firewall configured: HTTP service enabled"
 fi
 
 # ---------------------------
