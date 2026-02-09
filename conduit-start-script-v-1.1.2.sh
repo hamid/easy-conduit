@@ -144,12 +144,8 @@ if [ "$FIREWALL_CMD" = "ufw" ]; then
   ufw --force enable
   ufw status verbose || true
 else
-  echo "[+] Configuring firewall (RHEL-based systems)..."
-  # On RHEL, firewalld is already running with default config
-  # Use timeout to avoid DBus hangs during cloud-init
-  timeout 10 firewall-cmd --permanent --add-service=http 2>/dev/null || echo "[!] firewall-cmd timed out (DBus issue), will configure manually"
-  timeout 5 firewall-cmd --reload 2>/dev/null || true
-  echo "[+] Firewall configured: HTTP service enabled"
+  echo "[+] Skipping firewall configuration on RHEL-based systems"
+  echo "[!] Note: After installation, manually run: firewall-cmd --permanent --add-service=http && firewall-cmd --reload"
 fi
 
 # ---------------------------
@@ -372,6 +368,12 @@ fi
 nginx -t
 systemctl enable --now nginx
 systemctl restart nginx
+
+# Post-installation: Configure firewalld on RHEL systems (after cloud-init)
+if [ "$FIREWALL_CMD" != "ufw" ]; then
+  echo "[+] Configuring firewalld (post-installation)..."
+  (sleep 5 && firewall-cmd --permanent --add-service=http 2>/dev/null && firewall-cmd --reload 2>/dev/null && echo "[+] Firewall HTTP enabled") &
+fi
 
 echo "[+] Web dashboard available at: http://SERVER_IP/"
 echo "[+] firstboot completed: $(date -Is)"
