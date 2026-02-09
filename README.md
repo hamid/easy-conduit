@@ -7,9 +7,9 @@ One-command deployment of Psiphon Conduit with a beautiful web dashboard to moni
 Deploy on any Linux server with a single command:
 
 ```bash
-wget https://raw.githubusercontent.com/hamid/easy-conduit/master/conduit-start-script-v-1.1.2.sh
-chmod +x conduit-start-script-v-1.1.2.sh
-sudo bash conduit-start-script-v-1.1.2.sh
+wget https://raw.githubusercontent.com/hamid/easy-conduit/master/conduit-start-script.sh
+chmod +x conduit-start-script.sh
+sudo bash conduit-start-script.sh
 ```
 
 **That's it!** In ~5 minutes you'll have:
