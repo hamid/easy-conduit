@@ -187,12 +187,13 @@ cat <<'HTML'
         <div class="header">
             <h1>#FreeIran</h1>
 HTML
-echo "            <div class=\"subtitle\">Real-time Conduit Status • Uptime: ${RUNNING_TIME} • $(date '+%Y-%m-%d %H:%M:%S')</div>"
+echo "            <div class=\"subtitle\">Real-time Conduit Status • Uptime: ${RUNNING_TIME} • <span id=\"local-time\"></span></div>"
 cat <<'HTML'
         </div>
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="stat-label">Total Connected</div>
+HTML
 HTML
 echo "                <div class=\"stat-value large\">${UNIQUE_IPS}</div>"
 cat <<'HTML'
@@ -275,6 +276,24 @@ cat <<'HTML'
             </p>
         </div>
     </div>
+    <script>
+        // Update time in user's local timezone
+        function updateLocalTime() {
+            const now = new Date();
+            const formatted = now.toLocaleString('en-US', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false
+            }).replace(/(\d+)\/(\d+)\/(\d+),/, '$3-$1-$2');
+            document.getElementById('local-time').textContent = formatted;
+        }
+        updateLocalTime();
+        setInterval(updateLocalTime, 1000);
+    </script>
 </body>
 </html>
 HTML
