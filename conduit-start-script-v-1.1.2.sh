@@ -323,8 +323,9 @@ EOF
   if [ "$FIREWALL_CMD" != "ufw" ]; then
     # Check if template-based units exist (CentOS Stream 10+)
     if [ -f /usr/lib/systemd/system/fcgiwrap@.socket ]; then
-      echo "[+] Using built-in fcgiwrap template units..."
-      # Template units already exist, will be enabled per-user below
+      echo "[+] Detected fcgiwrap template units (CentOS Stream 10+)..."
+      # Update nginx config to use the template socket path
+      sed -i 's|unix:/run/fcgiwrap.socket|unix:/run/fcgiwrap/fcgiwrap-nginx.sock|g' /etc/nginx/conf.d/conduit-logs.conf
     else
       echo "[+] Creating fcgiwrap systemd units for RHEL-based system..."
       
@@ -365,13 +366,14 @@ if [ "$FIREWALL_CMD" != "ufw" ]; then
   # RHEL: Check if template units exist (CentOS Stream 10+)
   if [ -f /usr/lib/systemd/system/fcgiwrap@.socket ]; then
     echo "[+] Enabling fcgiwrap template socket for nginx user..."
-    systemctl enable --now fcgiwrap@nginx.socket
-    # Update nginx config to use the template socket path
-    sed -i 's|unix:/run/fcgiwrap.socket|unix:/run/fcgiwrap/fcgiwrap-nginx.sock|g' /etc/nginx/conf.d/conduit-logs.conf
+    systemctl stop fcgiwrap@nginx.service 2>/dev/null || true
+    systemctl stop fcgiwrap@nginx.socket 2>/dev/null || true
+    systemctl enable fcgiwrap@nginx.socket
+    systemctl start fcgiwrap@nginx.socket
   else
     echo "[+] Enabling fcgiwrap socket..."
     systemctl enable --now fcgiwrap.socket
-    systemctl start fcgiwrap.service
+    systemctl start fcgiwrap.service || true
   fi
 else
   # Ubuntu/Debian: fcgiwrap has built-in systemd units
