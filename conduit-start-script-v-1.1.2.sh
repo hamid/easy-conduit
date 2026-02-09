@@ -148,10 +148,27 @@ fi
 # 3) Install Docker
 # ---------------------------
 echo "[+] Installing Docker..."
-retry curl -fsSL https://get.docker.com -o /tmp/get-docker.sh
-bash /tmp/get-docker.sh
-systemctl enable --now docker
-docker --version || true
+
+# Check if AlmaLinux (get.docker.com doesn't support it yet)
+if [[ "$OS_NAME" == *"AlmaLinux"* ]]; then
+  echo "[+] Installing Docker manually for AlmaLinux..."
+  
+  # Add Docker CE repository
+  retry $PKG_INSTALL yum-utils device-mapper-persistent-data lvm2
+  retry yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+  
+  # Install Docker
+  retry $PKG_INSTALL docker-ce docker-ce-cli containerd.io docker-compose-plugin
+  
+  systemctl enable --now docker
+  docker --version || true
+else
+  # Use official Docker install script for other distros
+  retry curl -fsSL https://get.docker.com -o /tmp/get-docker.sh
+  bash /tmp/get-docker.sh
+  systemctl enable --now docker
+  docker --version || true
+fi
 
 # ---------------------------
 # 4) Install conduit-manager (installs/controls Conduit)
