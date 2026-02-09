@@ -157,8 +157,15 @@ if [[ "$OS_NAME" == *"AlmaLinux"* ]]; then
   retry $PKG_INSTALL yum-utils device-mapper-persistent-data lvm2
   retry yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
   
-  # Install Docker
-  retry $PKG_INSTALL docker-ce docker-ce-cli containerd.io docker-compose-plugin
+  # Install Docker (--allowerasing removes conflicting podman packages)
+  retry dnf install -y --allowerasing docker-ce docker-ce-cli containerd.io docker-compose-plugin
+  
+  # Disable SELinux (prevents nginx fcgiwrap socket connection issues)
+  if command -v getenforce >/dev/null 2>&1; then
+    echo "[+] Disabling SELinux for nginx/fcgiwrap compatibility..."
+    setenforce 0 2>/dev/null || true
+    sed -i 's/^SELINUX=enforcing/SELINUX=disabled/' /etc/selinux/config 2>/dev/null || true
+  fi
   
   systemctl enable --now docker
   docker --version || true
@@ -306,10 +313,54 @@ EOF
 
   # Remove default server block
   sed -i 's/listen.*80 default_server;//g' /etc/nginx/nginx.conf 2>/dev/null || true
+  
+  # RHEL-based: fcgiwrap doesn't have systemd units, create them
+  if [ "$FIREWALL_CMD" != "ufw" ]; then
+    echo "[+] Creating fcgiwrap systemd units for RHEL-based system..."
+    
+    cat > /etc/systemd/system/fcgiwrap.socket << 'FCGI_SOCKET_EOF'
+[Unit]
+Description=fcgiwrap Socket
+
+[Socket]
+ListenStream=/var/run/fcgiwrap.socket
+
+[Install]
+WantedBy=sockets.target
+FCGI_SOCKET_EOF
+
+    cat > /etc/systemd/system/fcgiwrap.service << 'FCGI_SERVICE_EOF'
+[Unit]
+Description=Simple CGI Server
+After=nss-user-lookup.target
+Requires=fcgiwrap.socket
+
+[Service]
+EnvironmentFile=/etc/sysconfig/fcgiwrap
+ExecStart=/usr/sbin/fcgiwrap $DAEMON_OPTS
+User=root
+Group=root
+Restart=on-failure
+
+[Install]
+Also=fcgiwrap.socket
+FCGI_SERVICE_EOF
+
+    mkdir -p /etc/sysconfig
+    echo 'DAEMON_OPTS="-s unix:/var/run/fcgiwrap.socket"' > /etc/sysconfig/fcgiwrap
+    systemctl daemon-reload
+  fi
 fi
 
 # Ensure fcgiwrap socket/service and nginx start on boot
-systemctl enable --now fcgiwrap || systemctl enable --now spawn-fcgi
+if [ "$FIREWALL_CMD" != "ufw" ]; then
+  # RHEL: Start fcgiwrap with spawn-fcgi for better socket handling
+  systemctl enable --now fcgiwrap.socket
+  systemctl start fcgiwrap.service || spawn-fcgi -s /var/run/fcgiwrap.socket -u $NGINX_USER -g $NGINX_USER -U $NGINX_USER -G $NGINX_USER -- /usr/sbin/fcgiwrap -c 4
+else
+  # Ubuntu/Debian: fcgiwrap has built-in systemd units
+  systemctl enable --now fcgiwrap
+fi
 nginx -t
 systemctl enable --now nginx
 systemctl restart nginx
