@@ -227,7 +227,7 @@ fi
 echo "[+] Installing nginx + fcgiwrap for simple CGI status page..."
 
 if [ "$PKG_MANAGER" = "apt" ]; then
-  retry $PKG_INSTALL nginx fcgiwrap geoip-bin geoip-database
+  retry $PKG_INSTALL nginx fcgiwrap
 else
   # RHEL-based: need EPEL for fcgiwrap
   if [ "$PKG_MANAGER" = "dnf" ]; then
@@ -238,8 +238,8 @@ else
   # Install nginx and fcgiwrap (spawn-fcgi not available on newer CentOS)
   retry $PKG_INSTALL nginx fcgiwrap python3-geoip2 wget
   
-  # Setup GeoIP for country tracking
-  echo "[+] Setting up GeoIP database and lookup tool..."
+  # Setup GeoIP for country tracking (CentOS/RHEL only - Ubuntu handles this via conduit-manager)
+  echo "[+] Setting up GeoIP database and lookup tool for CentOS/RHEL..."
   mkdir -p /usr/share/GeoIP
   if [ ! -f /usr/share/GeoIP/GeoLite2-Country.mmdb ]; then
     curl -fsSL -o /usr/share/GeoIP/GeoLite2-Country.mmdb https://github.com/P3TERX/GeoLite.mmdb/raw/download/GeoLite2-Country.mmdb
