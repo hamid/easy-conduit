@@ -146,9 +146,9 @@ if [ "$FIREWALL_CMD" = "ufw" ]; then
 else
   echo "[+] Configuring firewall (RHEL-based systems)..."
   # On RHEL, firewalld is already running with default config
-  # Just ensure HTTP is allowed
-  firewall-cmd --permanent --add-service=http 2>/dev/null || true
-  firewall-cmd --reload 2>/dev/null || true
+  # Use timeout to avoid DBus hangs during cloud-init
+  timeout 10 firewall-cmd --permanent --add-service=http 2>/dev/null || echo "[!] firewall-cmd timed out (DBus issue), will configure manually"
+  timeout 5 firewall-cmd --reload 2>/dev/null || true
   echo "[+] Firewall configured: HTTP service enabled"
 fi
 
