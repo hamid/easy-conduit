@@ -187,7 +187,7 @@ cat <<'HTML'
         <div class="header">
             <h1>#FreeIran</h1>
 HTML
-echo "            <div class=\"subtitle\">Real-time Conduit Status • Uptime: ${RUNNING_TIME} • <span id=\"local-time\"></span></div>"
+echo "            <div class=\"subtitle\">Real-time Conduit Status • Uptime: ${RUNNING_TIME}</div>"
 cat <<'HTML'
         </div>
         <div class="stats-grid">
@@ -277,22 +277,6 @@ cat <<'HTML'
         </div>
     </div>
     <script>
-        // Update time in user's local timezone
-        function updateLocalTime() {
-            const now = new Date();
-            const formatted = now.toLocaleString('en-US', {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit',
-                hour12: false
-            }).replace(/(\d+)\/(\d+)\/(\d+),/, '$3-$1-$2');
-            document.getElementById('local-time').textContent = formatted;
-        }
-        updateLocalTime();
-        setInterval(updateLocalTime, 1000);
     </script>
 </body>
 </html>
