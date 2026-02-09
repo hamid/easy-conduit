@@ -177,6 +177,13 @@ else
     sed -i 's/^SELINUX=enforcing/SELINUX=disabled/' /etc/selinux/config 2>/dev/null || true
   fi
   
+  # CentOS: Clean DNF cache to prevent mirror checksum errors
+  if [ "$OS_ID" = "centos" ]; then
+    echo "[+] Cleaning DNF cache for CentOS (prevents mirror errors)..."
+    dnf clean all 2>/dev/null || true
+    dnf makecache 2>/dev/null || true
+  fi
+  
   # Use official Docker install script for other distros
   retry curl -fsSL https://get.docker.com -o /tmp/get-docker.sh
   bash /tmp/get-docker.sh
