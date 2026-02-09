@@ -109,15 +109,18 @@ if [ "$PKG_MANAGER" = "apt" ]; then
   retry $PKG_INSTALL curl ca-certificates gnupg lsb-release ufw
 else
   # RHEL-based systems
-  retry $PKG_INSTALL curl ca-certificates gnupg2 firewalld
+  retry $PKG_INSTALL curl ca-certificates gnupg2
 fi
 
 # ---------------------------
-# 2) Firewall: open ports + block common torrent ports
+# 2) Firewall: configure only on Ubuntu/Debian
 # ---------------------------
-echo "[+] Configuring firewall..."
-
+# Note: On RHEL-based systems (CentOS, AlmaLinux, Rocky, Fedora), 
+# we skip firewall configuration as it's already enabled by default
+# and DBus conflicts can cause cloud-init failures
 if [ "$FIREWALL_CMD" = "ufw" ]; then
+  echo "[+] Configuring firewall (Ubuntu/Debian)..."
+  
   # UFW (Ubuntu/Debian)
   ufw --force reset
   ufw default deny incoming
@@ -137,28 +140,8 @@ if [ "$FIREWALL_CMD" = "ufw" ]; then
 
   ufw --force enable
   ufw status verbose || true
-  
 else
-  # firewalld (RHEL-based: CentOS, AlmaLinux, Fedora)
-  systemctl enable --now firewalld
-  
-  # Set default zones
-  firewall-cmd --set-default-zone=public
-  
-  # Allow SSH + HTTP
-  firewall-cmd --permanent --add-service=ssh
-  firewall-cmd --permanent --add-service=http
-  
-  # Block torrent ports (OUTBOUND)
-  firewall-cmd --permanent --direct --add-rule ipv4 filter OUTPUT 0 -p tcp --dport 6881:6889 -j DROP || true
-  firewall-cmd --permanent --direct --add-rule ipv4 filter OUTPUT 0 -p udp --dport 6881:6889 -j DROP || true
-  firewall-cmd --permanent --direct --add-rule ipv4 filter OUTPUT 0 -p tcp --dport 6969 -j DROP || true
-  firewall-cmd --permanent --direct --add-rule ipv4 filter OUTPUT 0 -p udp --dport 6969 -j DROP || true
-  firewall-cmd --permanent --direct --add-rule ipv4 filter OUTPUT 0 -p tcp --dport 51413 -j DROP || true
-  firewall-cmd --permanent --direct --add-rule ipv4 filter OUTPUT 0 -p udp --dport 51413 -j DROP || true
-  
-  firewall-cmd --reload
-  firewall-cmd --list-all || true
+  echo "[+] Skipping firewall configuration on RHEL-based systems (firewalld already enabled)"
 fi
 
 # ---------------------------
