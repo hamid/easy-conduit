@@ -164,16 +164,19 @@ if [[ "$OS_NAME" == *"AlmaLinux"* ]]; then
   # Install Docker (--allowerasing removes conflicting podman packages)
   retry dnf install -y --allowerasing docker-ce docker-ce-cli containerd.io docker-compose-plugin
   
-  # Disable SELinux (prevents nginx fcgiwrap socket connection issues)
-  if command -v getenforce >/dev/null 2>&1; then
+  systemctl enable --now docker
+  docker --version || true
+else
+  # Standard Docker installation for other distributions
+  echo "[+] Installing Docker from get.docker.com..."
+  
+  # Disable SELinux on RHEL-based systems (prevents nginx fcgiwrap socket connection issues)
+  if [ "$PKG_MANAGER" != "apt" ] && command -v getenforce >/dev/null 2>&1; then
     echo "[+] Disabling SELinux for nginx/fcgiwrap compatibility..."
     setenforce 0 2>/dev/null || true
     sed -i 's/^SELINUX=enforcing/SELINUX=disabled/' /etc/selinux/config 2>/dev/null || true
   fi
   
-  systemctl enable --now docker
-  docker --version || true
-else
   # Use official Docker install script for other distros
   retry curl -fsSL https://get.docker.com -o /tmp/get-docker.sh
   bash /tmp/get-docker.sh
@@ -229,11 +232,13 @@ echo "[+] Installing nginx + fcgiwrap for simple CGI status page..."
 if [ "$PKG_MANAGER" = "apt" ]; then
   retry $PKG_INSTALL nginx fcgiwrap
 else
-  # RHEL-based: need EPEL for fcgiwrap
-  if [ "$PKG_MANAGER" = "dnf" ]; then
-    retry $PKG_INSTALL epel-release
-  elif [ "$PKG_MANAGER" = "yum" ]; then
-    retry $PKG_INSTALL epel-release
+  # RHEL-based: need EPEL for fcgiwrap (but NOT Fedora - it has fcgiwrap in main repos)
+  if [ "$OS_ID" != "fedora" ]; then
+    if [ "$PKG_MANAGER" = "dnf" ]; then
+      retry $PKG_INSTALL epel-release
+    elif [ "$PKG_MANAGER" = "yum" ]; then
+      retry $PKG_INSTALL epel-release
+    fi
   fi
   # Install nginx and fcgiwrap (spawn-fcgi not available on newer CentOS)
   retry $PKG_INSTALL nginx fcgiwrap python3-geoip2 wget
