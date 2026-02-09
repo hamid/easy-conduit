@@ -50,6 +50,7 @@ detect_os() {
   if [ -f /etc/os-release ]; then
     . /etc/os-release
     OS_ID="${ID}"
+    OS_NAME="${NAME}"
     OS_VERSION="${VERSION_ID}"
     echo "[+] Detected OS: ${NAME} ${VERSION_ID}"
   else
