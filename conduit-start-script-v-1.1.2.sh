@@ -227,7 +227,7 @@ fi
 echo "[+] Installing nginx + fcgiwrap for simple CGI status page..."
 
 if [ "$PKG_MANAGER" = "apt" ]; then
-  retry $PKG_INSTALL nginx fcgiwrap
+  retry $PKG_INSTALL nginx fcgiwrap geoip-bin geoip-database
 else
   # RHEL-based: need EPEL for fcgiwrap
   if [ "$PKG_MANAGER" = "dnf" ]; then
@@ -236,7 +236,38 @@ else
     retry $PKG_INSTALL epel-release
   fi
   # Install nginx and fcgiwrap (spawn-fcgi not available on newer CentOS)
-  retry $PKG_INSTALL nginx fcgiwrap
+  retry $PKG_INSTALL nginx fcgiwrap python3-geoip2 wget
+  
+  # Setup GeoIP for country tracking
+  echo "[+] Setting up GeoIP database and lookup tool..."
+  mkdir -p /usr/share/GeoIP
+  if [ ! -f /usr/share/GeoIP/GeoLite2-Country.mmdb ]; then
+    curl -fsSL -o /usr/share/GeoIP/GeoLite2-Country.mmdb https://github.com/P3TERX/GeoLite.mmdb/raw/download/GeoLite2-Country.mmdb
+  fi
+  
+  # Create geoiplookup wrapper script for Python GeoIP2
+  cat > /usr/local/bin/geoiplookup << 'GEOIPEOF'
+#!/usr/bin/env python3
+import sys
+import geoip2.database
+
+if len(sys.argv) < 2:
+    print("Usage: geoiplookup <IP>")
+    sys.exit(1)
+
+ip = sys.argv[1]
+db_path = "/usr/share/GeoIP/GeoLite2-Country.mmdb"
+
+try:
+    with geoip2.database.Reader(db_path) as reader:
+        response = reader.country(ip)
+        country_name = response.country.name or "Unknown"
+        country_code = response.country.iso_code or "--"
+        print(f"GeoIP Country Edition: {country_code}, {country_name}")
+except Exception:
+    print("GeoIP Country Edition: --, Unknown")
+GEOIPEOF
+  chmod +x /usr/local/bin/geoiplookup
 fi
 
 # Create cgi-bin directory if it doesn't exist
