@@ -1,0 +1,52 @@
+---
+---
+
+@import "{{ site.theme }}";
+
+/* Import Persian web font from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap');
+
+/* RTL and Farsi language support */
+body {
+  direction: rtl;
+  text-align: right;
+  font-family: 'Vazirmatn', 'Tahoma', 'Iranian Sans', 'B Nazanin', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Fix code blocks direction */
+pre, code {
+  direction: ltr;
+  text-align: left;
+}
+
+/* Ensure lists are properly aligned for RTL */
+ul, ol {
+  padding-right: 2em;
+  padding-left: 0;
+}
+
+/* Header adjustments for RTL */
+.page-header {
+  text-align: center;
+}
+
+/* Main content improvements */
+.main-content {
+  h1, h2, h3, h4, h5, h6 {
+    text-align: right;
+    direction: rtl;
+  }
+  
+  p {
+    text-align: right;
+    direction: rtl;
+    line-height: 1.8;
+  }
+}
+
+/* Button and link styles */
+a {
+  direction: rtl;
+}

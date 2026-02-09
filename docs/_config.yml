@@ -1,0 +1,15 @@
+theme: jekyll-theme-cayman
+title: Easy Conduit
+description: آموزش نصب conduit در سه قدم ساده
+lang: fa-IR
+
+# Enable rendering of HTML tags in markdown
+markdown: kramdown
+kramdown:
+  input: GFM
+  hard_wrap: false
+  
+# Exclude files from processing
+exclude:
+  - Gemfile
+  - Gemfile.lock
