@@ -366,8 +366,11 @@ if [ "$FIREWALL_CMD" != "ufw" ]; then
   # RHEL: Check if template units exist (CentOS Stream 10+)
   if [ -f /usr/lib/systemd/system/fcgiwrap@.socket ]; then
     echo "[+] Enabling fcgiwrap template socket for nginx user..."
+    # Stop service first, then socket (order matters!)
     systemctl stop fcgiwrap@nginx.service 2>/dev/null || true
+    sleep 1
     systemctl stop fcgiwrap@nginx.socket 2>/dev/null || true
+    sleep 1
     systemctl enable fcgiwrap@nginx.socket
     systemctl start fcgiwrap@nginx.socket
   else
