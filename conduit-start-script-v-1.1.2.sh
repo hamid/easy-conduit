@@ -235,7 +235,8 @@ else
   elif [ "$PKG_MANAGER" = "yum" ]; then
     retry $PKG_INSTALL epel-release
   fi
-  retry $PKG_INSTALL nginx fcgiwrap spawn-fcgi
+  # Install nginx and fcgiwrap (spawn-fcgi not available on newer CentOS)
+  retry $PKG_INSTALL nginx fcgiwrap
 fi
 
 # Create cgi-bin directory if it doesn't exist
@@ -318,49 +319,60 @@ EOF
   # Remove default server block
   sed -i 's/listen.*80 default_server;//g' /etc/nginx/nginx.conf 2>/dev/null || true
   
-  # RHEL-based: fcgiwrap doesn't have systemd units, create them
+  # RHEL-based: Check if fcgiwrap has built-in systemd units
   if [ "$FIREWALL_CMD" != "ufw" ]; then
-    echo "[+] Creating fcgiwrap systemd units for RHEL-based system..."
-    
-    cat > /etc/systemd/system/fcgiwrap.socket << 'FCGI_SOCKET_EOF'
+    # Check if template-based units exist (CentOS Stream 10+)
+    if [ -f /usr/lib/systemd/system/fcgiwrap@.socket ]; then
+      echo "[+] Using built-in fcgiwrap template units..."
+      # Template units already exist, will be enabled per-user below
+    else
+      echo "[+] Creating fcgiwrap systemd units for RHEL-based system..."
+      
+      cat > /etc/systemd/system/fcgiwrap.socket << 'FCGI_SOCKET_EOF'
 [Unit]
 Description=fcgiwrap Socket
 
 [Socket]
-ListenStream=/var/run/fcgiwrap.socket
+ListenStream=/run/fcgiwrap.socket
 
 [Install]
 WantedBy=sockets.target
 FCGI_SOCKET_EOF
 
-    cat > /etc/systemd/system/fcgiwrap.service << 'FCGI_SERVICE_EOF'
+      cat > /etc/systemd/system/fcgiwrap.service << 'FCGI_SERVICE_EOF'
 [Unit]
 Description=Simple CGI Server
 After=nss-user-lookup.target
 Requires=fcgiwrap.socket
 
 [Service]
-EnvironmentFile=/etc/sysconfig/fcgiwrap
-ExecStart=/usr/sbin/fcgiwrap $DAEMON_OPTS
-User=root
-Group=root
+ExecStart=/usr/sbin/fcgiwrap -c 4
+User=nginx
+Group=nginx
 Restart=on-failure
 
 [Install]
 Also=fcgiwrap.socket
 FCGI_SERVICE_EOF
 
-    mkdir -p /etc/sysconfig
-    echo 'DAEMON_OPTS="-s unix:/var/run/fcgiwrap.socket"' > /etc/sysconfig/fcgiwrap
-    systemctl daemon-reload
+      systemctl daemon-reload
+    fi
   fi
 fi
 
 # Ensure fcgiwrap socket/service and nginx start on boot
 if [ "$FIREWALL_CMD" != "ufw" ]; then
-  # RHEL: Start fcgiwrap with spawn-fcgi for better socket handling
-  systemctl enable --now fcgiwrap.socket
-  systemctl start fcgiwrap.service || spawn-fcgi -s /var/run/fcgiwrap.socket -u $NGINX_USER -g $NGINX_USER -U $NGINX_USER -G $NGINX_USER -- /usr/sbin/fcgiwrap -c 4
+  # RHEL: Check if template units exist (CentOS Stream 10+)
+  if [ -f /usr/lib/systemd/system/fcgiwrap@.socket ]; then
+    echo "[+] Enabling fcgiwrap template socket for nginx user..."
+    systemctl enable --now fcgiwrap@nginx.socket
+    # Update nginx config to use the template socket path
+    sed -i 's|unix:/run/fcgiwrap.socket|unix:/run/fcgiwrap/fcgiwrap-nginx.sock|g' /etc/nginx/conf.d/conduit-logs.conf
+  else
+    echo "[+] Enabling fcgiwrap socket..."
+    systemctl enable --now fcgiwrap.socket
+    systemctl start fcgiwrap.service
+  fi
 else
   # Ubuntu/Debian: fcgiwrap has built-in systemd units
   systemctl enable --now fcgiwrap
