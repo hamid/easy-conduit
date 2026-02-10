@@ -29,8 +29,12 @@ PEAK=${PEAK:-0}
 # Get unique IPs count from cumulative_ips file
 UNIQUE_IPS=$(wc -l < /opt/conduit/traffic_stats/cumulative_ips 2>/dev/null || echo "0")
 
-# Count top countries from geoip_cache
-TOP_COUNTRIES=$(awk -F'|' '{
+# Get total IPs for percentage calculation
+GEOIP_CACHE="/opt/conduit/traffic_stats/geoip_cache"
+TOTAL_IPS=$(wc -l < "$GEOIP_CACHE" 2>/dev/null || echo "1")
+
+# Count top countries from geoip_cache with percentages
+TOP_COUNTRIES=$(awk -F'|' -v total="$TOTAL_IPS" '{
     country = $2;
     gsub(/^[ \t]+|[ \t]+$/, "", country);
     if (country == "Iran, Islamic Republic of") country = "Iran";
@@ -38,9 +42,10 @@ TOP_COUNTRIES=$(awk -F'|' '{
 }
 END {
     for (c in count) {
-        print count[c], c;
+        percent = (count[c] / total) * 100;
+        printf "%.1f %d %s\n", percent, count[c], c;
     }
-}' /opt/conduit/traffic_stats/geoip_cache 2>/dev/null | sort -rn | head -10)
+}' "$GEOIP_CACHE" 2>/dev/null | sort -rn | head -10)
 
 # Build JSON output
 cat <<EOF
@@ -62,10 +67,10 @@ cat <<EOF
 EOF
 
 # Add top countries as JSON array
-echo "$TOP_COUNTRIES" | while IFS=' ' read -r count country; do
+echo "$TOP_COUNTRIES" | while IFS=' ' read -r percentage count country; do
     # Escape quotes in country names
     country_escaped=$(echo "$country" | sed 's/"/\\"/g')
-    echo "    {\"country\": \"$country_escaped\", \"count\": $count},"
+    echo "    {\"country\": \"$country_escaped\", \"count\": $count, \"percentage\": $percentage},"
 done | sed '$ s/,$//'
 
 cat <<EOF
