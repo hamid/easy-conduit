@@ -63,52 +63,26 @@ if [ -f "$GEOIP_CACHE" ]; then
     COUNTRY_4_PERCENT=$(awk "BEGIN {printf \"%.1f\", ($COUNTRY_4_COUNT/$TOTAL_IPS)*100}")
     COUNTRY_5_PERCENT=$(awk "BEGIN {printf \"%.1f\", ($COUNTRY_5_COUNT/$TOTAL_IPS)*100}")
     
-    # Clean up country names
-    case "$COUNTRY_1_NAME" in
-        *Iran*) COUNTRY_1_FULL="Iran";;
-        *Germany*) COUNTRY_1_FULL="Germany";;
-        *United\ States*|*USA*) COUNTRY_1_FULL="United States";;
-        *Netherlands*) COUNTRY_1_FULL="Netherlands";;
-        *France*) COUNTRY_1_FULL="France";;
-        *Canada*) COUNTRY_1_FULL="Canada";;
-        *) COUNTRY_1_FULL="$COUNTRY_1_NAME";;
-    esac
-    case "$COUNTRY_2_NAME" in
-        *Iran*) COUNTRY_2_FULL="Iran";;
-        *Germany*) COUNTRY_2_FULL="Germany";;
-        *United\ States*|*USA*) COUNTRY_2_FULL="United States";;
-        *Netherlands*) COUNTRY_2_FULL="Netherlands";;
-        *France*) COUNTRY_2_FULL="France";;
-        *Canada*) COUNTRY_2_FULL="Canada";;
-        *) COUNTRY_2_FULL="$COUNTRY_2_NAME";;
-    esac
-    case "$COUNTRY_3_NAME" in
-        *Iran*) COUNTRY_3_FULL="Iran";;
-        *Germany*) COUNTRY_3_FULL="Germany";;
-        *United\ States*|*USA*) COUNTRY_3_FULL="United States";;
-        *Netherlands*) COUNTRY_3_FULL="Netherlands";;
-        *France*) COUNTRY_3_FULL="France";;
-        *Canada*) COUNTRY_3_FULL="Canada";;
-        *) COUNTRY_3_FULL="$COUNTRY_3_NAME";;
-    esac
-    case "$COUNTRY_4_NAME" in
-        *Iran*) COUNTRY_4_FULL="Iran";;
-        *Germany*) COUNTRY_4_FULL="Germany";;
-        *United\ States*|*USA*) COUNTRY_4_FULL="United States";;
-        *Netherlands*) COUNTRY_4_FULL="Netherlands";;
-        *France*) COUNTRY_4_FULL="France";;
-        *Canada*) COUNTRY_4_FULL="Canada";;
-        *) COUNTRY_4_FULL="$COUNTRY_4_NAME";;
-    esac
-    case "$COUNTRY_5_NAME" in
-        *Iran*) COUNTRY_5_FULL="Iran";;
-        *Germany*) COUNTRY_5_FULL="Germany";;
-        *United\ States*|*USA*) COUNTRY_5_FULL="United States";;
-        *Netherlands*) COUNTRY_5_FULL="Netherlands";;
-        *France*) COUNTRY_5_FULL="France";;
-        *Canada*) COUNTRY_5_FULL="Canada";;
-        *) COUNTRY_5_FULL="$COUNTRY_5_NAME";;
-    esac
+    # Function to clean up country names
+    clean_country_name() {
+        local name="$1"
+        case "$name" in
+            *Iran*) echo "Iran";;
+            *Germany*) echo "Germany";;
+            *United\ States*|*USA*) echo "United States";;
+            *Netherlands*) echo "Netherlands";;
+            *France*) echo "France";;
+            *Canada*) echo "Canada";;
+            *) echo "$name";;
+        esac
+    }
+    
+    # Clean up country names using the function
+    COUNTRY_1_FULL=$(clean_country_name "$COUNTRY_1_NAME")
+    COUNTRY_2_FULL=$(clean_country_name "$COUNTRY_2_NAME")
+    COUNTRY_3_FULL=$(clean_country_name "$COUNTRY_3_NAME")
+    COUNTRY_4_FULL=$(clean_country_name "$COUNTRY_4_NAME")
+    COUNTRY_5_FULL=$(clean_country_name "$COUNTRY_5_NAME")
 else
     # Fallback if file doesn't exist
     COUNTRY_1_FULL="Iran"; COUNTRY_1_PERCENT="75.0"
