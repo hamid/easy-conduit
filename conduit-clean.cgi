@@ -63,59 +63,59 @@ if [ -f "$GEOIP_CACHE" ]; then
     COUNTRY_4_PERCENT=$(awk "BEGIN {printf \"%.1f\", ($COUNTRY_4_COUNT/$TOTAL_IPS)*100}")
     COUNTRY_5_PERCENT=$(awk "BEGIN {printf \"%.1f\", ($COUNTRY_5_COUNT/$TOTAL_IPS)*100}")
     
-    # Map country codes to flags
+    # Clean up country names
     case "$COUNTRY_1_NAME" in
-        *Iran*) COUNTRY_1_FLAG="🇮🇷"; COUNTRY_1_FULL="Iran";;
-        *Germany*) COUNTRY_1_FLAG="🇩🇪"; COUNTRY_1_FULL="Germany";;
-        *United\ States*|*USA*) COUNTRY_1_FLAG="🇺🇸"; COUNTRY_1_FULL="United States";;
-        *Netherlands*) COUNTRY_1_FLAG="🇳🇱"; COUNTRY_1_FULL="Netherlands";;
-        *France*) COUNTRY_1_FLAG="🇫🇷"; COUNTRY_1_FULL="France";;
-        *Canada*) COUNTRY_1_FLAG="🇨🇦"; COUNTRY_1_FULL="Canada";;
-        *) COUNTRY_1_FLAG="🌍"; COUNTRY_1_FULL="$COUNTRY_1_NAME";;
+        *Iran*) COUNTRY_1_FULL="Iran";;
+        *Germany*) COUNTRY_1_FULL="Germany";;
+        *United\ States*|*USA*) COUNTRY_1_FULL="United States";;
+        *Netherlands*) COUNTRY_1_FULL="Netherlands";;
+        *France*) COUNTRY_1_FULL="France";;
+        *Canada*) COUNTRY_1_FULL="Canada";;
+        *) COUNTRY_1_FULL="$COUNTRY_1_NAME";;
     esac
     case "$COUNTRY_2_NAME" in
-        *Iran*) COUNTRY_2_FLAG="🇮🇷"; COUNTRY_2_FULL="Iran";;
-        *Germany*) COUNTRY_2_FLAG="🇩🇪"; COUNTRY_2_FULL="Germany";;
-        *United\ States*|*USA*) COUNTRY_2_FLAG="🇺🇸"; COUNTRY_2_FULL="United States";;
-        *Netherlands*) COUNTRY_2_FLAG="🇳🇱"; COUNTRY_2_FULL="Netherlands";;
-        *France*) COUNTRY_2_FLAG="🇫🇷"; COUNTRY_2_FULL="France";;
-        *Canada*) COUNTRY_2_FLAG="🇨🇦"; COUNTRY_2_FULL="Canada";;
-        *) COUNTRY_2_FLAG="🌍"; COUNTRY_2_FULL="$COUNTRY_2_NAME";;
+        *Iran*) COUNTRY_2_FULL="Iran";;
+        *Germany*) COUNTRY_2_FULL="Germany";;
+        *United\ States*|*USA*) COUNTRY_2_FULL="United States";;
+        *Netherlands*) COUNTRY_2_FULL="Netherlands";;
+        *France*) COUNTRY_2_FULL="France";;
+        *Canada*) COUNTRY_2_FULL="Canada";;
+        *) COUNTRY_2_FULL="$COUNTRY_2_NAME";;
     esac
     case "$COUNTRY_3_NAME" in
-        *Iran*) COUNTRY_3_FLAG="🇮🇷"; COUNTRY_3_FULL="Iran";;
-        *Germany*) COUNTRY_3_FLAG="🇩🇪"; COUNTRY_3_FULL="Germany";;
-        *United\ States*|*USA*) COUNTRY_3_FLAG="🇺🇸"; COUNTRY_3_FULL="United States";;
-        *Netherlands*) COUNTRY_3_FLAG="🇳🇱"; COUNTRY_3_FULL="Netherlands";;
-        *France*) COUNTRY_3_FLAG="🇫🇷"; COUNTRY_3_FULL="France";;
-        *Canada*) COUNTRY_3_FLAG="🇨🇦"; COUNTRY_3_FULL="Canada";;
-        *) COUNTRY_3_FLAG="🌍"; COUNTRY_3_FULL="$COUNTRY_3_NAME";;
+        *Iran*) COUNTRY_3_FULL="Iran";;
+        *Germany*) COUNTRY_3_FULL="Germany";;
+        *United\ States*|*USA*) COUNTRY_3_FULL="United States";;
+        *Netherlands*) COUNTRY_3_FULL="Netherlands";;
+        *France*) COUNTRY_3_FULL="France";;
+        *Canada*) COUNTRY_3_FULL="Canada";;
+        *) COUNTRY_3_FULL="$COUNTRY_3_NAME";;
     esac
     case "$COUNTRY_4_NAME" in
-        *Iran*) COUNTRY_4_FLAG="🇮🇷"; COUNTRY_4_FULL="Iran";;
-        *Germany*) COUNTRY_4_FLAG="🇩🇪"; COUNTRY_4_FULL="Germany";;
-        *United\ States*|*USA*) COUNTRY_4_FLAG="🇺🇸"; COUNTRY_4_FULL="United States";;
-        *Netherlands*) COUNTRY_4_FLAG="🇳🇱"; COUNTRY_4_FULL="Netherlands";;
-        *France*) COUNTRY_4_FLAG="🇫🇷"; COUNTRY_4_FULL="France";;
-        *Canada*) COUNTRY_4_FLAG="🇨🇦"; COUNTRY_4_FULL="Canada";;
-        *) COUNTRY_4_FLAG="🌍"; COUNTRY_4_FULL="$COUNTRY_4_NAME";;
+        *Iran*) COUNTRY_4_FULL="Iran";;
+        *Germany*) COUNTRY_4_FULL="Germany";;
+        *United\ States*|*USA*) COUNTRY_4_FULL="United States";;
+        *Netherlands*) COUNTRY_4_FULL="Netherlands";;
+        *France*) COUNTRY_4_FULL="France";;
+        *Canada*) COUNTRY_4_FULL="Canada";;
+        *) COUNTRY_4_FULL="$COUNTRY_4_NAME";;
     esac
     case "$COUNTRY_5_NAME" in
-        *Iran*) COUNTRY_5_FLAG="🇮🇷"; COUNTRY_5_FULL="Iran";;
-        *Germany*) COUNTRY_5_FLAG="🇩🇪"; COUNTRY_5_FULL="Germany";;
-        *United\ States*|*USA*) COUNTRY_5_FLAG="🇺🇸"; COUNTRY_5_FULL="United States";;
-        *Netherlands*) COUNTRY_5_FLAG="🇳🇱"; COUNTRY_5_FULL="Netherlands";;
-        *France*) COUNTRY_5_FLAG="🇫🇷"; COUNTRY_5_FULL="France";;
-        *Canada*) COUNTRY_5_FLAG="🇨🇦"; COUNTRY_5_FULL="Canada";;
-        *) COUNTRY_5_FLAG="🌍"; COUNTRY_5_FULL="$COUNTRY_5_NAME";;
+        *Iran*) COUNTRY_5_FULL="Iran";;
+        *Germany*) COUNTRY_5_FULL="Germany";;
+        *United\ States*|*USA*) COUNTRY_5_FULL="United States";;
+        *Netherlands*) COUNTRY_5_FULL="Netherlands";;
+        *France*) COUNTRY_5_FULL="France";;
+        *Canada*) COUNTRY_5_FULL="Canada";;
+        *) COUNTRY_5_FULL="$COUNTRY_5_NAME";;
     esac
 else
     # Fallback if file doesn't exist
-    COUNTRY_1_FLAG="🇮🇷"; COUNTRY_1_FULL="Iran"; COUNTRY_1_PERCENT="75.0"
-    COUNTRY_2_FLAG="🇩🇪"; COUNTRY_2_FULL="Germany"; COUNTRY_2_PERCENT="10.0"
-    COUNTRY_3_FLAG="🇺🇸"; COUNTRY_3_FULL="United States"; COUNTRY_3_PERCENT="8.0"
-    COUNTRY_4_FLAG="🇳🇱"; COUNTRY_4_FULL="Netherlands"; COUNTRY_4_PERCENT="4.0"
-    COUNTRY_5_FLAG="🇫🇷"; COUNTRY_5_FULL="France"; COUNTRY_5_PERCENT="3.0"
+    COUNTRY_1_FULL="Iran"; COUNTRY_1_PERCENT="75.0"
+    COUNTRY_2_FULL="Germany"; COUNTRY_2_PERCENT="10.0"
+    COUNTRY_3_FULL="United States"; COUNTRY_3_PERCENT="8.0"
+    COUNTRY_4_FULL="Netherlands"; COUNTRY_4_PERCENT="4.0"
+    COUNTRY_5_FULL="France"; COUNTRY_5_PERCENT="3.0"
 fi
 
 cat <<'HTML'
@@ -188,7 +188,7 @@ cat <<'HTML'
             display: flex; justify-content: space-between; align-items: center;
             margin-bottom: 8px; font-size: 1.05em;
         }
-        .country-name { font-weight: 500; color: #333; }
+        .country-name { font-weight: 500; color: #ab0207; }
         .country-percent { color: #124a3f; font-weight: 700; font-size: 1.1em; }
         .progress-bar-container {
             width: 100%; height: 12px; background: #f0f0f0;
