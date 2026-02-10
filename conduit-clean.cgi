@@ -269,11 +269,11 @@ cat <<'HTML'
             </div>
         </div>
         <div class="country-list">
-            <h2>🌍 TOP 5 COUNTRIES BY UNIQUE IPs</h2>
+            <h2>TOP 5 COUNTRIES BY UNIQUE IPs</h2>
             <div class="country-item">
                 <div class="country-header">
 HTML
-echo "                    <span class=\"country-name\">${COUNTRY_1_FLAG} ${COUNTRY_1_FULL}</span>"
+echo "                    <span class=\"country-name\">${COUNTRY_1_FULL}</span>"
 echo "                    <span class=\"country-percent\">${COUNTRY_1_PERCENT}%</span>"
 cat <<'HTML'
                 </div>
@@ -286,7 +286,7 @@ cat <<'HTML'
             <div class="country-item">
                 <div class="country-header">
 HTML
-echo "                    <span class=\"country-name\">${COUNTRY_2_FLAG} ${COUNTRY_2_FULL}</span>"
+echo "                    <span class=\"country-name\">${COUNTRY_2_FULL}</span>"
 echo "                    <span class=\"country-percent\">${COUNTRY_2_PERCENT}%</span>"
 cat <<'HTML'
                 </div>
@@ -299,7 +299,7 @@ cat <<'HTML'
             <div class="country-item">
                 <div class="country-header">
 HTML
-echo "                    <span class=\"country-name\">${COUNTRY_3_FLAG} ${COUNTRY_3_FULL}</span>"
+echo "                    <span class=\"country-name\">${COUNTRY_3_FULL}</span>"
 echo "                    <span class=\"country-percent\">${COUNTRY_3_PERCENT}%</span>"
 cat <<'HTML'
                 </div>
@@ -312,7 +312,7 @@ cat <<'HTML'
             <div class="country-item">
                 <div class="country-header">
 HTML
-echo "                    <span class=\"country-name\">${COUNTRY_4_FLAG} ${COUNTRY_4_FULL}</span>"
+echo "                    <span class=\"country-name\">${COUNTRY_4_FULL}</span>"
 echo "                    <span class=\"country-percent\">${COUNTRY_4_PERCENT}%</span>"
 cat <<'HTML'
                 </div>
@@ -325,7 +325,7 @@ cat <<'HTML'
             <div class="country-item">
                 <div class="country-header">
 HTML
-echo "                    <span class=\"country-name\">${COUNTRY_5_FLAG} ${COUNTRY_5_FULL}</span>"
+echo "                    <span class=\"country-name\">${COUNTRY_5_FULL}</span>"
 echo "                    <span class=\"country-percent\">${COUNTRY_5_PERCENT}%</span>"
 cat <<'HTML'
                 </div>
