@@ -37,6 +37,9 @@ fi
 # Get actual country distribution from geoip_cache
 GEOIP_CACHE="/opt/conduit/traffic_stats/geoip_cache"
 if [ -f "$GEOIP_CACHE" ]; then
+    # Get total IPs for percentage calculation
+    TOTAL_IPS=$(wc -l < "$GEOIP_CACHE" 2>/dev/null || echo "1")
+    
     # Parse geoip_cache and count by country, get top 5
     # Format: IP|Country Name (e.g., 1.2.3.4|Iran, Islamic Republic of)
     TOP_COUNTRIES=$(awk -F'|' '{print $2}' "$GEOIP_CACHE" | sort | uniq -c | sort -rn | head -5)
@@ -53,6 +56,13 @@ if [ -f "$GEOIP_CACHE" ]; then
     COUNTRY_5_COUNT=$(echo "$TOP_COUNTRIES" | awk 'NR==5 {print $1}')
     COUNTRY_5_NAME=$(echo "$TOP_COUNTRIES" | awk 'NR==5 {$1=""; print substr($0,2)}')
     
+    # Calculate percentages
+    COUNTRY_1_PERCENT=$(awk "BEGIN {printf \"%.1f\", ($COUNTRY_1_COUNT/$TOTAL_IPS)*100}")
+    COUNTRY_2_PERCENT=$(awk "BEGIN {printf \"%.1f\", ($COUNTRY_2_COUNT/$TOTAL_IPS)*100}")
+    COUNTRY_3_PERCENT=$(awk "BEGIN {printf \"%.1f\", ($COUNTRY_3_COUNT/$TOTAL_IPS)*100}")
+    COUNTRY_4_PERCENT=$(awk "BEGIN {printf \"%.1f\", ($COUNTRY_4_COUNT/$TOTAL_IPS)*100}")
+    COUNTRY_5_PERCENT=$(awk "BEGIN {printf \"%.1f\", ($COUNTRY_5_COUNT/$TOTAL_IPS)*100}")
+    
     # Map country codes to flags
     case "$COUNTRY_1_NAME" in
         *Iran*) COUNTRY_1_FLAG="🇮🇷"; COUNTRY_1_FULL="Iran";;
@@ -60,6 +70,7 @@ if [ -f "$GEOIP_CACHE" ]; then
         *United\ States*|*USA*) COUNTRY_1_FLAG="🇺🇸"; COUNTRY_1_FULL="United States";;
         *Netherlands*) COUNTRY_1_FLAG="🇳🇱"; COUNTRY_1_FULL="Netherlands";;
         *France*) COUNTRY_1_FLAG="🇫🇷"; COUNTRY_1_FULL="France";;
+        *Canada*) COUNTRY_1_FLAG="🇨🇦"; COUNTRY_1_FULL="Canada";;
         *) COUNTRY_1_FLAG="🌍"; COUNTRY_1_FULL="$COUNTRY_1_NAME";;
     esac
     case "$COUNTRY_2_NAME" in
@@ -68,6 +79,7 @@ if [ -f "$GEOIP_CACHE" ]; then
         *United\ States*|*USA*) COUNTRY_2_FLAG="🇺🇸"; COUNTRY_2_FULL="United States";;
         *Netherlands*) COUNTRY_2_FLAG="🇳🇱"; COUNTRY_2_FULL="Netherlands";;
         *France*) COUNTRY_2_FLAG="🇫🇷"; COUNTRY_2_FULL="France";;
+        *Canada*) COUNTRY_2_FLAG="🇨🇦"; COUNTRY_2_FULL="Canada";;
         *) COUNTRY_2_FLAG="🌍"; COUNTRY_2_FULL="$COUNTRY_2_NAME";;
     esac
     case "$COUNTRY_3_NAME" in
@@ -76,6 +88,7 @@ if [ -f "$GEOIP_CACHE" ]; then
         *United\ States*|*USA*) COUNTRY_3_FLAG="🇺🇸"; COUNTRY_3_FULL="United States";;
         *Netherlands*) COUNTRY_3_FLAG="🇳🇱"; COUNTRY_3_FULL="Netherlands";;
         *France*) COUNTRY_3_FLAG="🇫🇷"; COUNTRY_3_FULL="France";;
+        *Canada*) COUNTRY_3_FLAG="🇨🇦"; COUNTRY_3_FULL="Canada";;
         *) COUNTRY_3_FLAG="🌍"; COUNTRY_3_FULL="$COUNTRY_3_NAME";;
     esac
     case "$COUNTRY_4_NAME" in
@@ -84,6 +97,7 @@ if [ -f "$GEOIP_CACHE" ]; then
         *United\ States*|*USA*) COUNTRY_4_FLAG="🇺🇸"; COUNTRY_4_FULL="United States";;
         *Netherlands*) COUNTRY_4_FLAG="🇳🇱"; COUNTRY_4_FULL="Netherlands";;
         *France*) COUNTRY_4_FLAG="🇫🇷"; COUNTRY_4_FULL="France";;
+        *Canada*) COUNTRY_4_FLAG="🇨🇦"; COUNTRY_4_FULL="Canada";;
         *) COUNTRY_4_FLAG="🌍"; COUNTRY_4_FULL="$COUNTRY_4_NAME";;
     esac
     case "$COUNTRY_5_NAME" in
@@ -92,15 +106,16 @@ if [ -f "$GEOIP_CACHE" ]; then
         *United\ States*|*USA*) COUNTRY_5_FLAG="🇺🇸"; COUNTRY_5_FULL="United States";;
         *Netherlands*) COUNTRY_5_FLAG="🇳🇱"; COUNTRY_5_FULL="Netherlands";;
         *France*) COUNTRY_5_FLAG="🇫🇷"; COUNTRY_5_FULL="France";;
+        *Canada*) COUNTRY_5_FLAG="🇨🇦"; COUNTRY_5_FULL="Canada";;
         *) COUNTRY_5_FLAG="🌍"; COUNTRY_5_FULL="$COUNTRY_5_NAME";;
     esac
 else
     # Fallback if file doesn't exist
-    COUNTRY_1_FLAG="🇮🇷"; COUNTRY_1_FULL="Iran"; COUNTRY_1_COUNT=$((UNIQUE_IPS_RAW * 75 / 100))
-    COUNTRY_2_FLAG="🇩🇪"; COUNTRY_2_FULL="Germany"; COUNTRY_2_COUNT=$((UNIQUE_IPS_RAW * 10 / 100))
-    COUNTRY_3_FLAG="🇺🇸"; COUNTRY_3_FULL="United States"; COUNTRY_3_COUNT=$((UNIQUE_IPS_RAW * 8 / 100))
-    COUNTRY_4_FLAG="🇳🇱"; COUNTRY_4_FULL="Netherlands"; COUNTRY_4_COUNT=$((UNIQUE_IPS_RAW * 4 / 100))
-    COUNTRY_5_FLAG="🇫🇷"; COUNTRY_5_FULL="France"; COUNTRY_5_COUNT=$((UNIQUE_IPS_RAW * 3 / 100))
+    COUNTRY_1_FLAG="🇮🇷"; COUNTRY_1_FULL="Iran"; COUNTRY_1_PERCENT="75.0"
+    COUNTRY_2_FLAG="🇩🇪"; COUNTRY_2_FULL="Germany"; COUNTRY_2_PERCENT="10.0"
+    COUNTRY_3_FLAG="🇺🇸"; COUNTRY_3_FULL="United States"; COUNTRY_3_PERCENT="8.0"
+    COUNTRY_4_FLAG="🇳🇱"; COUNTRY_4_FULL="Netherlands"; COUNTRY_4_PERCENT="4.0"
+    COUNTRY_5_FLAG="🇫🇷"; COUNTRY_5_FULL="France"; COUNTRY_5_PERCENT="3.0"
 fi
 
 cat <<'HTML'
@@ -166,12 +181,34 @@ cat <<'HTML'
             color: #ab0207; text-align: center; font-weight: 700;
         }
         .country-item {
-            display: flex; justify-content: space-between; padding: 12px 0;
-            border-bottom: 1px solid #f0f0f0; font-size: 1.1em;
+            margin-bottom: 18px;
         }
-        .country-item:last-child { border-bottom: none; }
+        .country-item:last-child { margin-bottom: 0; }
+        .country-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 8px; font-size: 1.05em;
+        }
         .country-name { font-weight: 500; color: #333; }
-        .country-count { color: #124a3f; font-weight: 600; }
+        .country-percent { color: #124a3f; font-weight: 700; font-size: 1.1em; }
+        .progress-bar-container {
+            width: 100%; height: 12px; background: #f0f0f0;
+            border-radius: 6px; overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .progress-bar {
+            height: 100%; background: linear-gradient(90deg, #124a3f, #1a6e5e);
+            border-radius: 6px; transition: width 0.5s ease;
+            position: relative;
+        }
+        .progress-bar::after {
+            content: ''; position: absolute; top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
         .footer {
             text-align: center; padding: 30px 20px;
             background: #fafafa;
@@ -232,36 +269,71 @@ cat <<'HTML'
             </div>
         </div>
         <div class="country-list">
-            <h2>🌍 TOP 5 BY UNIQUE IPs</h2>
+            <h2>🌍 TOP 5 COUNTRIES BY UNIQUE IPs</h2>
             <div class="country-item">
+                <div class="country-header">
 HTML
-echo "                <span class=\"country-name\">${COUNTRY_1_FLAG} ${COUNTRY_1_FULL}</span>"
-echo "                <span class=\"country-count\">${COUNTRY_1_COUNT}</span>"
+echo "                    <span class=\"country-name\">${COUNTRY_1_FLAG} ${COUNTRY_1_FULL}</span>"
+echo "                    <span class=\"country-percent\">${COUNTRY_1_PERCENT}%</span>"
 cat <<'HTML'
+                </div>
+                <div class="progress-bar-container">
+HTML
+echo "                    <div class=\"progress-bar\" style=\"width: ${COUNTRY_1_PERCENT}%\"></div>"
+cat <<'HTML'
+                </div>
             </div>
             <div class="country-item">
+                <div class="country-header">
 HTML
-echo "                <span class=\"country-name\">${COUNTRY_2_FLAG} ${COUNTRY_2_FULL}</span>"
-echo "                <span class=\"country-count\">${COUNTRY_2_COUNT}</span>"
+echo "                    <span class=\"country-name\">${COUNTRY_2_FLAG} ${COUNTRY_2_FULL}</span>"
+echo "                    <span class=\"country-percent\">${COUNTRY_2_PERCENT}%</span>"
 cat <<'HTML'
+                </div>
+                <div class="progress-bar-container">
+HTML
+echo "                    <div class=\"progress-bar\" style=\"width: ${COUNTRY_2_PERCENT}%\"></div>"
+cat <<'HTML'
+                </div>
             </div>
             <div class="country-item">
+                <div class="country-header">
 HTML
-echo "                <span class=\"country-name\">${COUNTRY_3_FLAG} ${COUNTRY_3_FULL}</span>"
-echo "                <span class=\"country-count\">${COUNTRY_3_COUNT}</span>"
+echo "                    <span class=\"country-name\">${COUNTRY_3_FLAG} ${COUNTRY_3_FULL}</span>"
+echo "                    <span class=\"country-percent\">${COUNTRY_3_PERCENT}%</span>"
 cat <<'HTML'
+                </div>
+                <div class="progress-bar-container">
+HTML
+echo "                    <div class=\"progress-bar\" style=\"width: ${COUNTRY_3_PERCENT}%\"></div>"
+cat <<'HTML'
+                </div>
             </div>
             <div class="country-item">
+                <div class="country-header">
 HTML
-echo "                <span class=\"country-name\">${COUNTRY_4_FLAG} ${COUNTRY_4_FULL}</span>"
-echo "                <span class=\"country-count\">${COUNTRY_4_COUNT}</span>"
+echo "                    <span class=\"country-name\">${COUNTRY_4_FLAG} ${COUNTRY_4_FULL}</span>"
+echo "                    <span class=\"country-percent\">${COUNTRY_4_PERCENT}%</span>"
 cat <<'HTML'
+                </div>
+                <div class="progress-bar-container">
+HTML
+echo "                    <div class=\"progress-bar\" style=\"width: ${COUNTRY_4_PERCENT}%\"></div>"
+cat <<'HTML'
+                </div>
             </div>
             <div class="country-item">
+                <div class="country-header">
 HTML
-echo "                <span class=\"country-name\">${COUNTRY_5_FLAG} ${COUNTRY_5_FULL}</span>"
-echo "                <span class=\"country-count\">${COUNTRY_5_COUNT}</span>"
+echo "                    <span class=\"country-name\">${COUNTRY_5_FLAG} ${COUNTRY_5_FULL}</span>"
+echo "                    <span class=\"country-percent\">${COUNTRY_5_PERCENT}%</span>"
 cat <<'HTML'
+                </div>
+                <div class="progress-bar-container">
+HTML
+echo "                    <div class=\"progress-bar\" style=\"width: ${COUNTRY_5_PERCENT}%\"></div>"
+cat <<'HTML'
+                </div>
             </div>
         </div>
         <div class="footer">
