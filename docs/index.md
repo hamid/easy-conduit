@@ -48,6 +48,8 @@ Psiphon Conduit یک ابزار قدرتمند برای کمک به دسترسی
 <br/>
 <img width="300" class="screenshot" alt="image" src="https://github.com/user-attachments/assets/15b31cc6-14fb-42ff-90be-274821a9f609" />
 <br/><br/>
+
+# مرحله دوم
 بعداز اتصال به کارت، صفحه زیر رو باید ببینید. توی اینجا قبل از اینکه یک سرور بسازیم باید قبلش کدهایی که قراره توی سرور ها اجرا بشه(کد های نصب conduit) رو از طریق همین محیط گرافیکی و خیلی راحت قرار بدیم. 
 <br/>
 برای این کار روی دکمه به‌علاوه + بزنید تا منوی محصولات باز بشه
@@ -84,6 +86,7 @@ sudo bash conduit-start-script.sh
 <img width="300" class="screenshot" alt="image" src="https://github.com/user-attachments/assets/93added3-d79f-46c0-8889-53ff1894c241" />
 <br/><br/>
 
+# مرحله سوم
 خوب حالا وقت ساخت یک سرور کوچیک هست. پس مجددا روی دکمه + پایین صفحه بزنید.
 
 <br/>
@@ -159,14 +162,14 @@ sudo bash conduit-start-script.sh
 <br/><br/>
 
 
-در صفحه بعد هم وضعیت سرور رو میبیند که در حال ایجاده.
+در صفحه بعد هم وضعیت سرور رو می‌بیند که در حال ایجاده.
 
 <br/>
 <img width="300" class="screenshot" alt="image" src="https://github.com/user-attachments/assets/8ac565f2-46d7-4e1d-a56a-6b551e513899" />
 <br/><br/>
 
 
-
+# و اندکی صبر
 بعد از چند دقیقه سرور ساخته میشه  ** و در اینجل لطفا بین ۱۲ تا ۱۵ دقیق صبر کنید تا اون اون کد اجرا بشه و conduit رو نصب کنه ** 
 
 <br/>
