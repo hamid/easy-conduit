@@ -19,3 +19,205 @@ Psiphon Conduit یک ابزار قدرتمند برای کمک به دسترسی
 
 <a href="https://www.vultr.com/?ref=9865522" target="_blank">روی این لینک کلیک کنید تا برید به صفحه ثبت نام</a>
 
+
+توی عکس زیر روی اون چک باکس کلیک کنید و ثبت نام کنید. پیشنهاد من برای راه سریع‌تر، ثبت نام از طریق گوگل هست که آیکون‌اش اون پایین هست.
+
+<img width="300" class="screenshot" alt="image" src="https://github.com/user-attachments/assets/cb53136f-3891-4309-bec8-f219e9df50da" /><br/><br/>
+بعد از ثبت نام باید کارت اعتباری خودتون رو به عنوان روش احراز هویت وارد کنید.
+<br/>
+<img width="300" class="screenshot" alt="image" src="https://github.com/user-attachments/assets/cb53136f-3891-4309-bec8-f219e9df50da" />
+<br/><br/>
+توی این مرحله یادتون نره ادرس رو هم وارد کنید. احتیاج به ادرس دقیق نیست فقط خیابون اصلی و کد پستی کافیه برای این سایت
+<br/>
+<img width="300" class="screenshot" alt="image" src="https://github.com/user-attachments/assets/7a963a39-2859-4eb4-8ec8-5f00c1b75da6" />
+<br/><br/>
+در ادامه هم می‌تونید یک مقدار رو به عنوان شارژ اولیه انتخاب کنید. برای بعضی کارت ها می تونید فقط اون تیک link رو بزارید و پولی توی این مرحله پرداخت نکنید. می‌تونید تست کنید که ببینید کارتتون کدوم دسته قرار می‌گیره
+
+<br/>
+<img width="300" class="screenshot" alt="image" src="https://github.com/user-attachments/assets/15b31cc6-14fb-42ff-90be-274821a9f609" />
+<br/><br/>
+بعداز اتصال به کارت، صفحه زیر رو باید ببینید. توی اینجا قبل از اینکه یک سرور بسازیم باید قبلش کدهایی که قراره توی سرور ها اجرا بشه(کد های نصب conduit) رو از طریق همین محیط گرافیکی و خیلی راحت قرار بدیم. 
+<br/>
+برای این کار روی دکمه به‌علاوه + بزنید تا منوی محصولات باز بشه
+<br/>
+<img width="300" class="screenshot" alt="image" src="https://github.com/user-attachments/assets/4aa7b64e-af5c-4a41-b429-73ebd8c1ab62" />
+<br/><br/>
+
+بعد توی منوی که باز می‌شه یکم اسکرول می‌کنیم و گزینه **Scripts** رو انتخاب می‌کنیم
+<br/>
+<img width="300" class="screenshot" alt="image" src="https://github.com/user-attachments/assets/1956d51b-f375-493b-882c-db74461717e5" />
+<br/><br/>
+
+توی صفحه ای که باز می‌شه، توی فیلد اول، یک نام دلخواه وارد میکنید مثلا conduit. گزینه دوم رو روی همون Boot می‌زاریم باشه. و گزینه اخر که مهمترین قسمت این نصب هست: اول کل اون متن که داخل به صورت تستی پارد شده رو select all کنید و بعد کامل پاک کنید و بعدش کد زیر رو کلشو کپی کنید و داخل اون باکس بزارید:
+<br/>
+```bash
+#!/bin/sh
+
+wget https://raw.githubusercontent.com/hamid/easy-conduit/master/conduit-start-script.sh
+chmod +x conduit-start-script.sh
+sudo bash conduit-start-script.sh
+```
+<br/>
+
+
+**فقط دقت کنید در نهایت باید کدی که قرار دادید شبیه عکس زیر باشه**
+<br/>
+
+<br/>
+<img width="300" class="screenshot" alt="image" src="https://github.com/user-attachments/assets/a96df306-8a43-4884-b008-1d7ae55c4be5" />
+<br/><br/>
+
+و در نهایت روی دکمه Add Script بزنید تا ذخیره بشه
+<br/>
+<img width="300" class="screenshot" alt="image" src="https://github.com/user-attachments/assets/93added3-d79f-46c0-8889-53ff1894c241" />
+<br/><br/>
+
+خوب حالا وقت ساخت یک سرور کوچیک هست. پس مجددا روی دکمه + پایین صفحه بزنید.
+
+<br/>
+<img width="300" class="screenshot" alt="image" src="https://github.com/user-attachments/assets/8e416cc4-688d-4d10-afe8-42d02da50459" />
+<br/><br/>
+
+ از منو باز شده این بار همون بالا روی **Deploy new Server**  بزنید
+
+<br/>
+<img width="300" class="screenshot" alt="image" src="https://github.com/user-attachments/assets/f01c540a-196d-436e-a754-072779c30197" />
+<br/><br/>
+
+توی صفحه‌ای که باز میشه همون ابال باید گزینه **Shared CPU** رو انتخواب کنید.
+
+<br/>
+<img width="300" class="screenshot" alt="image" src="https://github.com/user-attachments/assets/8d48a3b8-a1a5-4734-9deb-fdb68ad7296c" />
+<br/><br/>
+
+توی ادامه باید کشوری که توش سرور میخواید رو انتخاب کنید. پیشنهاد من آمریکا نیست چون ساخت سرورش ۱۰ دقیقه بیشتر طول می‌کشه. مثلا یکی از سرورهای داخل اروپا رو انتخاب کنید
+
+<br/>
+<img width="300" class="screenshot" alt="image" src="https://github.com/user-attachments/assets/46af97e7-ac3e-43b1-9ad1-c123406686e8" />
+<br/><br/>
+
+توی مرحله بعد باید قدرت اون سرور رو مشخص کنید. پیشنهاد من یک سرور با دو تا vCPU هست. البته با کمترش هم اوکیه ولیسرعت سرو خیلی کم میشه وهنگ زیاد می‌کنه.
+پیشنهاد من **vc2-2c-2gb** هست که یکم اسکرول کنید توی لیست می بینیدش. قیمیت این سرور ماهیانه ۱۶ دلار هست و نکته ایکهدرباره این دیتا سنتر هست اینکه شما ساعتی پول میدید نه ماهیانه و شما می‌تونید هر زمانی دوست داشتید قطعش کنید و پول همون مدت مصرف رو بدید.
+
+
+<br/>
+<img width="300" class="screenshot" alt="image" src="https://github.com/user-attachments/assets/b4255653-1438-44f3-91bb-3653391cb397" />
+<br/><br/>
+
+توی ادامه گزینه بک اپ رو غیر فعال کنید چون نیازی نداریم بهش و هزینه اضافی هست
+
+<br/>
+<img width="300" class="screenshot" alt="image" src="https://github.com/user-attachments/assets/10daebf8-9483-437f-9f7c-0b6d68aadf63" />
+<br/><br/>
+
+<br/>
+<img width="300" class="screenshot" alt="image" src="https://github.com/user-attachments/assets/0bc00ce6-b41c-4104-be14-fb764ca17194" />
+<br/><br/>
+
+بعد روی دکنه Configure می‌زنیم که اخرین مرحله راه اندازی سرور هم انجام بدیم
+
+<br/>
+<img width="300" class="screenshot" alt="image" src="https://github.com/user-attachments/assets/3645c3f9-f060-4cc8-b721-880e8de9ca47" />
+<br/><br/>
+
+در اولین مرحله  طبق عکس زیر از این صفحه باید سیستم عامل **Ubuntu** ورژن ۲۴ رو انتخاب کنید:
+
+<br/>
+<img width="300" class="screenshot" alt="image" src="https://github.com/user-attachments/assets/986e5b09-ee6c-455f-8cb1-80511c27a66a" />
+<br/><br/>
+
+در ادامه و مهمترین تنطیم این بخش انتخاب اسکریپت هست. این جا توی گزینه Startup Script باید همون کدی که ساختیم رو انتخاب کنید. 
+
+<br/>
+<img width="300" class="screenshot" alt="image" src="https://github.com/user-attachments/assets/e328a9dc-427c-4596-ad26-b20a16a78921" />
+<br/><br/>
+
+طبیعتا باید یک گزینه برای انتخاب باشه. توجه کنید برای ساخت سرور های بعدی این گزینه رو فراموش نکنید چون اگر انتخاب نشه سرور به صورت خام ساخته می‌شه.
+
+<br/>
+<img width="300" class="screenshot" alt="image" src="https://github.com/user-attachments/assets/b06850fb-9486-424a-85a2-5fa97f6551bc" />
+<br/><br/>
+
+و در نهایت روی دکمه deploy بزنید تا سرور ساخته بشه.
+
+
+
+<br/>
+<img width="300" class="screenshot" alt="image" src="https://github.com/user-attachments/assets/a9b20cdb-8571-4fa3-8b03-8a71415517a2" />
+<br/><br/>
+
+
+در صفحه بعد هم وضعیت سرور رو میبیند که در حال ایجاده.
+
+<br/>
+<img width="300" class="screenshot" alt="image" src="https://github.com/user-attachments/assets/8ac565f2-46d7-4e1d-a56a-6b551e513899" />
+<br/><br/>
+
+
+
+بعد از چند دقیقه سرور ساخته میشه  ** و در اینجل لطفا بین ۱۲ تا ۱۵ دقیق صبر کنید تا اون اون کد اجرا بشه و conduit رو نصب کنه ** 
+
+<br/>
+<br/>
+
+خوب توی همین حین که داره conduit نصب میشه ما می‌تونیم ای پی سرور رو بدست بیاریم که بتونیم بعد از نصب وضعیت سرور و اینکه چه تعداد به سرور وصل شدن رو ببینیم.
+<br/><br/>
+ سرورمون  بعد از ۲ ۳ دقیقه به شکل زیر در میاد
+ <br/>
+<img width="300" class="screenshot" alt="image" src="https://github.com/user-attachments/assets/3e09c3a8-55d8-4894-b795-3cfada7e3de4" />
+<br/><br/>
+
+اگر وضعیتش Running بود یعنی سرور راه اندازی شده و د حال نصب conduit هست ولی ما میتونیم روی اون بزنیم که مشخصات سرور رو ببینیم.
+<br/>
+<br/>
+برای مثال من این سرور رو ساختم و همونطور که توی عکس می‌بینیم. ای پی سرور رو توی عکس مشخص کردم:
+
+
+ <br/>
+<img width="300" class="screenshot" alt="image" src="https://github.com/user-attachments/assets/38f3b37c-55d8-45ec-a8f3-aabdf8d788b3" />
+<br/><br/>
+
+این ادرس رو کپی کنید و بعد زا ۱۵ دقیقه توی یک تب جدید مرورگر بازش کنید و باید صفحه شبیه زیر رو ببینید:
+
+
+
+ <br/>
+<img width="300" class="screenshot" alt="image" src="https://github.com/user-attachments/assets/ebd230d5-175e-4349-8869-6a9a33252b0d" />
+<br/><br/>
+<img width="300" class="screenshot" alt="image" src="https://github.com/user-attachments/assets/998b2388-5e9f-4138-9d89-a7b0db1d2c28" />
+<br/><br/>
+
+
+این صفحه آمار افرادی کل و همچنین به تفکیک کشور رو نشون میده.  طبیعتا بعد از چند ساعت این آمار افرایش شدیدی می‌کنه و خوب باید بگم *تبریک* و ممنون که این کار رو برای همه ایرانی ها انجام دادی.
+<br/>
+حالا با رفرش صفحه و چک کردن هر ساعته میتونی ببینی که چند نفر از مردم ایران رو بهشون اینترنت ازاد دادی. 
+<br/><br/>
+اگر بعد از ۲۰ دقیق هنوز این صفحه برات باز نمیشه مشکلی نیست سرور رو پاک کن و یکبار دیگه انجام بده. احتمالا یکی از مراحل رو جا انداختی. پیشنهاد می‌کنم توی ادامه نکاتی رو که اوردم رو هم نگاه بکنی قطعا کمک می‌کنه. 
+
+
+
+## چند نکته
+۱. شما میتوید هر چند تا سرور دیگه ای که خواستید اضافه کنید. 
+۲. شما ساعتی پول هر سرور رو می‌دیدو هر زمان دوست داشتید میتونید پاکش کنید فقط کافیه روی سرور مورد نظر بزنید و توی صفحه مشخصاتش روی اون گزینه سه نقطه کلیک کنید وروی destroy بزنید
+<br/>
+<img width="300" class="screenshot" alt="image" src="https://github.com/user-attachments/assets/3317b207-3d69-48a8-849f-f84bd6aea057" />
+<br/><br/>
+۳. این روش امنی هست چرا که دذسترسی سرور رو به هیچ اپ و یا برنامه ای ندادید و برای اینکه مطمعن بشید هم میتونید اون اسکریپتی که اون بالا زدید رو به یک AI بدید و بگید وارد اون لینک بشه و کدها رو بخونه و ازش بپرسید که محتوای کد ها چی هسند و ایا خطر ناک هستند یا خیر. فارغ از این این کد من برای هر کدی که روی سرور اجرا می‌کنید باید دقت کنید که دقیقا چی هست. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
