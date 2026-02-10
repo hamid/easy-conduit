@@ -56,12 +56,12 @@ if [ -f "$GEOIP_CACHE" ]; then
     COUNTRY_5_COUNT=$(echo "$TOP_COUNTRIES" | awk 'NR==5 {print $1}')
     COUNTRY_5_NAME=$(echo "$TOP_COUNTRIES" | awk 'NR==5 {$1=""; print substr($0,2)}')
     
-    # Calculate percentages
-    COUNTRY_1_PERCENT=$(awk "BEGIN {printf \"%.1f\", ($COUNTRY_1_COUNT/$TOTAL_IPS)*100}")
-    COUNTRY_2_PERCENT=$(awk "BEGIN {printf \"%.1f\", ($COUNTRY_2_COUNT/$TOTAL_IPS)*100}")
-    COUNTRY_3_PERCENT=$(awk "BEGIN {printf \"%.1f\", ($COUNTRY_3_COUNT/$TOTAL_IPS)*100}")
-    COUNTRY_4_PERCENT=$(awk "BEGIN {printf \"%.1f\", ($COUNTRY_4_COUNT/$TOTAL_IPS)*100}")
-    COUNTRY_5_PERCENT=$(awk "BEGIN {printf \"%.1f\", ($COUNTRY_5_COUNT/$TOTAL_IPS)*100}")
+    # Calculate percentages only for countries that exist
+    [ -n "$COUNTRY_1_COUNT" ] && COUNTRY_1_PERCENT=$(awk "BEGIN {printf \"%.1f\", ($COUNTRY_1_COUNT/$TOTAL_IPS)*100}") || COUNTRY_1_PERCENT="0"
+    [ -n "$COUNTRY_2_COUNT" ] && COUNTRY_2_PERCENT=$(awk "BEGIN {printf \"%.1f\", ($COUNTRY_2_COUNT/$TOTAL_IPS)*100}") || COUNTRY_2_PERCENT="0"
+    [ -n "$COUNTRY_3_COUNT" ] && COUNTRY_3_PERCENT=$(awk "BEGIN {printf \"%.1f\", ($COUNTRY_3_COUNT/$TOTAL_IPS)*100}") || COUNTRY_3_PERCENT="0"
+    [ -n "$COUNTRY_4_COUNT" ] && COUNTRY_4_PERCENT=$(awk "BEGIN {printf \"%.1f\", ($COUNTRY_4_COUNT/$TOTAL_IPS)*100}") || COUNTRY_4_PERCENT="0"
+    [ -n "$COUNTRY_5_COUNT" ] && COUNTRY_5_PERCENT=$(awk "BEGIN {printf \"%.1f\", ($COUNTRY_5_COUNT/$TOTAL_IPS)*100}") || COUNTRY_5_PERCENT="0"
     
     # Function to clean up country names
     clean_country_name() {
@@ -244,71 +244,70 @@ cat <<'HTML'
         </div>
         <div class="country-list">
             <h2>TOP 5 COUNTRIES BY UNIQUE IPs</h2>
+HTML
+
+# Only show countries that have data
+[ -n "$COUNTRY_1_FULL" ] && cat <<HTML
             <div class="country-item">
                 <div class="country-header">
-HTML
-echo "                    <span class=\"country-name\">${COUNTRY_1_FULL}</span>"
-echo "                    <span class=\"country-percent\">${COUNTRY_1_PERCENT}%</span>"
-cat <<'HTML'
+                    <span class="country-name">${COUNTRY_1_FULL}</span>
+                    <span class="country-percent">${COUNTRY_1_PERCENT}%</span>
                 </div>
                 <div class="progress-bar-container">
-HTML
-echo "                    <div class=\"progress-bar\" style=\"width: ${COUNTRY_1_PERCENT}%\"></div>"
-cat <<'HTML'
+                    <div class="progress-bar" style="width: ${COUNTRY_1_PERCENT}%"></div>
                 </div>
             </div>
+HTML
+
+[ -n "$COUNTRY_2_FULL" ] && cat <<HTML
             <div class="country-item">
                 <div class="country-header">
-HTML
-echo "                    <span class=\"country-name\">${COUNTRY_2_FULL}</span>"
-echo "                    <span class=\"country-percent\">${COUNTRY_2_PERCENT}%</span>"
-cat <<'HTML'
+                    <span class="country-name">${COUNTRY_2_FULL}</span>
+                    <span class="country-percent">${COUNTRY_2_PERCENT}%</span>
                 </div>
                 <div class="progress-bar-container">
-HTML
-echo "                    <div class=\"progress-bar\" style=\"width: ${COUNTRY_2_PERCENT}%\"></div>"
-cat <<'HTML'
+                    <div class="progress-bar" style="width: ${COUNTRY_2_PERCENT}%"></div>
                 </div>
             </div>
+HTML
+
+[ -n "$COUNTRY_3_FULL" ] && cat <<HTML
             <div class="country-item">
                 <div class="country-header">
-HTML
-echo "                    <span class=\"country-name\">${COUNTRY_3_FULL}</span>"
-echo "                    <span class=\"country-percent\">${COUNTRY_3_PERCENT}%</span>"
-cat <<'HTML'
+                    <span class="country-name">${COUNTRY_3_FULL}</span>
+                    <span class="country-percent">${COUNTRY_3_PERCENT}%</span>
                 </div>
                 <div class="progress-bar-container">
-HTML
-echo "                    <div class=\"progress-bar\" style=\"width: ${COUNTRY_3_PERCENT}%\"></div>"
-cat <<'HTML'
+                    <div class="progress-bar" style="width: ${COUNTRY_3_PERCENT}%"></div>
                 </div>
             </div>
+HTML
+
+[ -n "$COUNTRY_4_FULL" ] && cat <<HTML
             <div class="country-item">
                 <div class="country-header">
-HTML
-echo "                    <span class=\"country-name\">${COUNTRY_4_FULL}</span>"
-echo "                    <span class=\"country-percent\">${COUNTRY_4_PERCENT}%</span>"
-cat <<'HTML'
+                    <span class="country-name">${COUNTRY_4_FULL}</span>
+                    <span class="country-percent">${COUNTRY_4_PERCENT}%</span>
                 </div>
                 <div class="progress-bar-container">
-HTML
-echo "                    <div class=\"progress-bar\" style=\"width: ${COUNTRY_4_PERCENT}%\"></div>"
-cat <<'HTML'
+                    <div class="progress-bar" style="width: ${COUNTRY_4_PERCENT}%"></div>
                 </div>
             </div>
+HTML
+
+[ -n "$COUNTRY_5_FULL" ] && cat <<HTML
             <div class="country-item">
                 <div class="country-header">
-HTML
-echo "                    <span class=\"country-name\">${COUNTRY_5_FULL}</span>"
-echo "                    <span class=\"country-percent\">${COUNTRY_5_PERCENT}%</span>"
-cat <<'HTML'
+                    <span class="country-name">${COUNTRY_5_FULL}</span>
+                    <span class="country-percent">${COUNTRY_5_PERCENT}%</span>
                 </div>
                 <div class="progress-bar-container">
-HTML
-echo "                    <div class=\"progress-bar\" style=\"width: ${COUNTRY_5_PERCENT}%\"></div>"
-cat <<'HTML'
+                    <div class="progress-bar" style="width: ${COUNTRY_5_PERCENT}%"></div>
                 </div>
             </div>
+HTML
+
+cat <<'HTML'
         </div>
         <div class="footer">
             <p>Internet should not be blocked in any country.</p>
