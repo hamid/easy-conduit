@@ -1,6 +1,6 @@
 #!/bin/bash
 # Script version
-SCRIPT_VERSION="1.1.3"
+SCRIPT_VERSION="1.1.4"
 
 echo "Content-type: application/json"
 echo ""
@@ -9,8 +9,9 @@ echo ""
 STATUS_OUTPUT=$(sudo /usr/local/bin/conduit status 2>&1)
 STATUS_CLEAN=$(echo "$STATUS_OUTPUT" | sed 's/\x1b\[[0-9;]*m//g')
 
-# Get conduit manager version
-CONDUIT_VERSION=$(sudo /usr/local/bin/conduit --version 2>&1 | head -1 | awk '{print $NF}' || echo "unknown")
+# Get conduit manager version (extract from banner or status output)
+CONDUIT_VERSION=$(echo "$STATUS_CLEAN" | grep -i "CONDUIT MANAGER" | sed -n 's/.*MANAGER \(v[0-9.]*\).*/\1/p' | head -1)
+[ -z "$CONDUIT_VERSION" ] && CONDUIT_VERSION="unknown"
 
 # Parse current status
 # Line 1: Status: Running (time)  |  Peak: X  |  Avg: X
