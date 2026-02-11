@@ -27,11 +27,20 @@ RUNNING_TIME=${RUNNING_TIME:-0s}
 PEAK=${PEAK:-0}
 
 # Get unique IPs count from cumulative_ips file
-UNIQUE_IPS=$(wc -l < /opt/conduit/traffic_stats/cumulative_ips 2>/dev/null || echo "0")
+# Check if file exists first to avoid shell redirection errors
+if [ -f /opt/conduit/traffic_stats/cumulative_ips ]; then
+    UNIQUE_IPS=$(wc -l < /opt/conduit/traffic_stats/cumulative_ips 2>/dev/null || echo "0")
+else
+    UNIQUE_IPS=0
+fi
 
 # Get total IPs for percentage calculation
 GEOIP_CACHE="/opt/conduit/traffic_stats/geoip_cache"
-TOTAL_IPS=$(wc -l < "$GEOIP_CACHE" 2>/dev/null || echo "1")
+if [ -f "$GEOIP_CACHE" ]; then
+    TOTAL_IPS=$(wc -l < "$GEOIP_CACHE" 2>/dev/null || echo "1")
+else
+    TOTAL_IPS=1
+fi
 
 # Count top countries from geoip_cache with percentages
 TOP_COUNTRIES=$(awk -F'|' -v total="$TOTAL_IPS" '{

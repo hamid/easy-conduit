@@ -26,7 +26,13 @@ RUNNING_TIME=${RUNNING_TIME:-0s}
 TOTAL_CLIENTS=$((CONNECTED + CONNECTING))
 
 # Get actual Unique IPs count from cumulative_ips file
-UNIQUE_IPS_RAW=$(wc -l < /opt/conduit/traffic_stats/cumulative_ips 2>/dev/null || echo "0")
+# Check if file exists first to avoid shell redirection errors
+if [ -f /opt/conduit/traffic_stats/cumulative_ips ]; then
+    UNIQUE_IPS_RAW=$(wc -l < /opt/conduit/traffic_stats/cumulative_ips 2>/dev/null || echo "0")
+else
+    UNIQUE_IPS_RAW=0
+fi
+
 # Format as K notation (e.g., 7945 -> 7.9K)
 if [ "$UNIQUE_IPS_RAW" -ge 1000 ]; then
     UNIQUE_IPS=$(awk "BEGIN {printf \"%.1fK\", $UNIQUE_IPS_RAW/1000}")
