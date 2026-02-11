@@ -316,7 +316,7 @@ HTML
             </div>
 HTML
 
-cat <<'HTML'
+cat <<HTML
         </div>
         <div class="footer">
             <p>Internet should not be blocked in any country.</p>
