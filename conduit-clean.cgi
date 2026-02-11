@@ -1,4 +1,7 @@
 #!/bin/bash
+# Script version
+SCRIPT_VERSION="1.1.2"
+
 echo "Content-type: text/html"
 echo ""
 
@@ -325,6 +328,7 @@ cat <<'HTML'
                     Create your easy Conduit server to help free Iran 🚀
                 </a>
             </p>
+            <p style="margin-top: 20px; font-size: 0.7em; opacity: 0.4; text-align: center;">v${SCRIPT_VERSION}</p>
         </div>
     </div>
     <script>

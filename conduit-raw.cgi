@@ -1,10 +1,16 @@
 #!/bin/bash
+# Script version
+SCRIPT_VERSION="1.1.2"
+
 echo "Content-type: application/json"
 echo ""
 
 # Get conduit status
 STATUS_OUTPUT=$(sudo /usr/local/bin/conduit status 2>&1)
 STATUS_CLEAN=$(echo "$STATUS_OUTPUT" | sed 's/\x1b\[[0-9;]*m//g')
+
+# Get conduit manager version
+CONDUIT_VERSION=$(sudo /usr/local/bin/conduit --version 2>&1 | head -1 | awk '{print $NF}' || echo "unknown")
 
 # Parse current status
 CONNECTED=$(echo "$STATUS_CLEAN" | awk 'NR==3 {print $4}')
@@ -71,6 +77,10 @@ cat <<EOF
   "traffic": {
     "upload": "$UPLOAD $UPLOAD_UNIT",
     "download": "$DOWNLOAD $DOWNLOAD_UNIT"
+  },
+  "version": {
+    "script": "$SCRIPT_VERSION",
+    "conduit_manager": "$CONDUIT_VERSION"
   },
   "top_countries": [
 EOF
