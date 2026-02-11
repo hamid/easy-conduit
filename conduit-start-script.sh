@@ -225,6 +225,17 @@ if command -v conduit >/dev/null 2>&1; then
   echo "[+] Checking conduit status..."
   conduit status || true
   
+  # Restart conduit to ensure tracker is activated
+  # The tracker often doesn't start on fresh install and needs a restart
+  echo "[+] Restarting conduit to activate tracker..."
+  sleep 3
+  conduit restart || true
+  sleep 5
+  
+  # Verify tracker is active
+  echo "[+] Verifying tracker status..."
+  conduit status | grep -i tracker || true
+  
   echo "[+] Conduit installation complete!"
 else
   echo "[!] conduit command not found after install script."
