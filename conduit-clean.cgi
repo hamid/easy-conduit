@@ -1,6 +1,6 @@
 #!/bin/bash
 # Script version
-SCRIPT_VERSION="1.1.2"
+SCRIPT_VERSION="1.1.3"
 
 echo "Content-type: text/html"
 echo ""
@@ -12,11 +12,13 @@ STATUS_OUTPUT=$(sudo /usr/local/bin/conduit status 2>&1)
 STATUS_CLEAN=$(echo "$STATUS_OUTPUT" | sed 's/\x1b\[[0-9;]*m//g')
 
 # Parse values correctly from the actual format
-CONNECTED=$(echo "$STATUS_CLEAN" | awk 'NR==3 {print $4}')
-CONNECTING=$(echo "$STATUS_CLEAN" | awk 'NR==3 {print $6}')
-UPLOAD=$(echo "$STATUS_CLEAN" | awk 'NR==6 {print $2, $3}')
-DOWNLOAD=$(echo "$STATUS_CLEAN" | awk 'NR==7 {print $2, $3}')
-RUNNING_TIME=$(echo "$STATUS_CLEAN" | awk 'NR==2 {match($0, /\(([^)]+)\)/, arr); print arr[1]}')
+# Line 1: Status: Running (time)
+# Line 2: Containers: X/X  Clients: X connected, X connecting
+CONNECTED=$(echo "$STATUS_CLEAN" | awk 'NR==2 {for(i=1;i<=NF;i++) if($i=="connected,") print $(i-1)}')
+CONNECTING=$(echo "$STATUS_CLEAN" | awk 'NR==2 {for(i=1;i<=NF;i++) if($i=="connecting") print $(i-1)}')
+UPLOAD=$(echo "$STATUS_CLEAN" | awk '/Upload:/ {print $2, $3}')
+DOWNLOAD=$(echo "$STATUS_CLEAN" | awk '/Download:/ {print $2, $3}')
+RUNNING_TIME=$(echo "$STATUS_CLEAN" | awk 'NR==1 {match($0, /\(([^)]+)\)/, arr); print arr[1]}')
 
 # Set defaults for empty values
 CONNECTED=${CONNECTED:-0}
