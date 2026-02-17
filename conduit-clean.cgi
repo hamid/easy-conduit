@@ -326,7 +326,7 @@ cat <<HTML
             <p>We <span class="heart">♥</span> <span class="iran">Iranians</span> need internet freedom.</p>
             <p style="margin-top: 15px; opacity: 0.7; font-size: 0.95em;">Together, we break barriers. Together, we build bridges.</p>
             <p style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #e0e0e0;">
-                <a href="https://github.com/hamid/easy-conduit" target="_blank" style="color: #124a3f; text-decoration: none; font-weight: 600; transition: color 0.3s;">
+                <a href="https://hamid.github.io/easy-conduit/" target="_blank" style="color: #124a3f; text-decoration: none; font-weight: 600; transition: color 0.3s;">
                     Create your easy Conduit server to help free Iran 🚀
                 </a>
             </p>
