@@ -247,6 +247,11 @@ fi
 # ---------------------------
 echo "[+] Installing nginx + fcgiwrap for simple CGI status page..."
 
+# Wait for package manager lock again (in case unattended-upgrades started)
+if [ "$PKG_MANAGER" = "apt" ]; then
+  wait_for_apt_lock
+fi
+
 if [ "$PKG_MANAGER" = "apt" ]; then
   retry $PKG_INSTALL nginx fcgiwrap
 else
